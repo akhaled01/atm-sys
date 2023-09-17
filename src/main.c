@@ -1,4 +1,5 @@
 #include "header.h"
+#include <ncurses.h>
 
 void mainMenu(struct User u)
 {
@@ -19,7 +20,7 @@ void mainMenu(struct User u)
     switch (option)
     {
     case 1:
-        createNewAcc(u);
+        CreateNewAcc(u);
         break;
     case 2:
         // student TODO : add your **Update account information** function
@@ -52,43 +53,62 @@ void mainMenu(struct User u)
     }
 };
 
-void initMenu(struct User *u)
+void startMenu()
 {
     int r = 0;
     int option;
-    system("clear");
-    printf("\n\n\t\t======= ATM =======\n");
-    printf("\n\t\t-->> Feel free to login / register :\n");
-    printf("\n\t\t[1]- login\n");
-    printf("\n\t\t[2]- register\n");
-    printf("\n\t\t[3]- exit\n");
-    while (!r)
+
+    initscr();
+    clear();
+    start_color();
+    curs_set(0);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    // title display
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(maxY / 4, (maxX / 2 - strlen("R01 ATM BANK SYSTEM") / 2), "R01 ATM BANK SYSTEM");
+    refresh();
+    attroff(COLOR_PAIR(1) | A_BOLD);
+    attron(COLOR_PAIR(2) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen("[1]-LOGIN  [2]-REGISTER NEW USER  [3]-EXIT SYSTEM") / 2), "[1]-LOGIN  [2]-REGISTER NEW USER  [3]-EXIT SYSTEM");
+    refresh();
+    attroff(COLOR_PAIR(2) | A_BOLD);
+    noecho();
+    scanw("%d", &option);
+    echo();
+    switch (option)
     {
-        scanf("%d", &option);
-        switch (option)
-        {
-        case 1:
-            loginMenu();
-            r = 1;
-            break;
-        case 2:
-            CreateNewUser();
-            r = 1;
-            break;
-        case 3:
-            exit(1);
-            break;
-        default:
-            printf("Insert a valid operation!\n");
-        }
+    case 1:
+        clear();
+        loginMenu();
+        r = 1;
+        break;
+    case 2:
+        clear();
+        CreateNewUser();
+        r = 1;
+        break;
+    case 3:
+        endwin();
+        break;
+    default:
+        clear();
+        attron(COLOR_PAIR(3) | A_BOLD);
+        mvprintw(0, 0, "Please insert a Valid Operation");
+        refresh();
+        attroff(COLOR_PAIR(3) | A_BOLD);
+        int endall = getch();
+        endwin();
     }
-};
+    endwin();
+}
+
 
 int main()
 {
-    struct User u;
-
-    initMenu(&u);
-    // mainMenu(u);
+    startMenu();
     return 0;
 }

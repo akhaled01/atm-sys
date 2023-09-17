@@ -24,9 +24,8 @@ struct Record
 
 struct User
 {
-    int id;
-    char name[50];
-    char password[50];
+    char name[500];
+    char password[500];
 };
 
 // authentication functions
@@ -36,7 +35,10 @@ void CreateNewUser();
 int checkUsernameExists(const char *userName);
 void disableEcho();
 void enableEcho();
+void trim(char *str);
+void startMenu();
+char *getTodaysDateAsString();
 // system function
-void createNewAcc(struct User u);
+void CreateNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);

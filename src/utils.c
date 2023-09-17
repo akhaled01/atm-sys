@@ -4,6 +4,9 @@
 #include <termios.h>
 #include <unistd.h>
 #include "header.h"
+#include <time.h>
+#include <ctype.h>
+#include <stdlib.h>
 
 int checkUsernameExists(const char *userName)
 {
@@ -41,18 +44,31 @@ int checkUsernameExists(const char *userName)
     return 0;
 }
 
-struct termios originalTerm;
-
-void disableEcho()
+char *getTodaysDateAsString()
 {
-    struct termios term;
-    tcgetattr(STDIN_FILENO, &term);
-    term.c_lflag &= ~ECHO;
-    tcsetattr(STDIN_FILENO, TCSANOW, &term);
+    time_t t = time(NULL);
+    struct tm *now = localtime(&t);
+
+    char *dateStr = (char *)malloc(sizeof(char) * 11); // "YYYY-MM-DD\0"
+    snprintf(dateStr, 11, "%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
+
+    return dateStr;
 }
 
-void enableEcho() {
-    // Restore the original terminal attributes
-    tcsetattr(STDIN_FILENO, TCSANOW, &originalTerm);
-    system("clear");
+
+void trim(char *str) {
+    char *end;
+
+    // Trim leading space
+    while(isspace((unsigned char)*str)) str++;
+
+    if(*str == 0)  // All spaces?
+        return;
+
+    // Trim trailing space
+    end = str + strlen(str) - 1;
+    while(end > str && isspace((unsigned char)*end)) end--;
+
+    // Write new null terminator character
+    end[1] = '\0';
 }

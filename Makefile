@@ -1,17 +1,35 @@
-objects = src/main.o src/system.o src/auth.o src/utils.o
+# Specify the directory for object files
+OBJ_DIR := target
 
-atm : $(objects)
-	cc -o atm $(objects) -lmysqlclient
+# List of object files
+objects := $(addprefix $(OBJ_DIR)/, main.o system.o auth.o utils.o)
 
-main.o : src/header.h
-kbd.o : src/header.h
-command.o : src/header.h
-display.o : src/header.h
-insert.o : src/header.h
-search.o : src/header.h
-files.o : src/header.h
-utils.o : src/header.h
+# Specify the target directory for the executable
+TARGET_DIR := .
 
-clean :
+# Name of the executable
+TARGET := $(TARGET_DIR)/atm
+
+# Compiler flags
+CFLAGS := -Isrc
+
+# Default target
+all: $(TARGET)
+
+$(TARGET): $(objects)
+	$(CC) -o $@ $^ -lmysqlclient -lncurses
+
+# Rule for compiling object files
+$(OBJ_DIR)/%.o: src/%.c src/header.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Create the object directory if it does not exist
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
+
+clean:
 	rm -f $(objects)
-	rm -f atm
+	rmdir $(OBJ_DIR)
+	rm -f $(TARGET)
+
+.PHONY: all clean
