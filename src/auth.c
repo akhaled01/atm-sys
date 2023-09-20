@@ -20,7 +20,7 @@ void loginMenu()
     getmaxyx(stdscr, maxY, maxX);
     // title display
     attron(COLOR_PAIR(1) | A_BOLD);
-    mvprintw(maxY / 8, (maxX / 2 - strlen("Welcome Back to R01 Bank") / 2), "Welcome Back to R01 Bank");
+    mvprintw(maxY / 8, (maxX / 2 - strlen("WELCOME TO R01 BANK") / 2), "WELCOME TO R01 BANK");
     refresh();
     attroff(COLOR_PAIR(1) | A_BOLD);
     attron(COLOR_PAIR(2) | A_BOLD);
@@ -82,7 +82,7 @@ void loginMenu()
         mvprintw(0, 0, "Error getting result from database, press any key to exit");
         refresh();
         attroff(COLOR_PAIR(3) | A_BOLD);
-        getch();
+        int c = getch();
         endwin();
         return;
     }
@@ -95,7 +95,7 @@ void loginMenu()
         mvprintw(0, 0, "Error fetching row, press any key to exit");
         refresh();
         attroff(COLOR_PAIR(3) | A_BOLD);
-        getch();
+        int c = getch();
         endwin();
         return;
     }
@@ -115,11 +115,13 @@ void loginMenu()
     }
     else
     {
-        printf("login failed\n");
+        clear();
+        attron(COLOR_PAIR(3) | A_BOLD);
+        mvprintw(0, 0, "Login Failed");
+        refresh();
+        attroff(COLOR_PAIR(3) | A_BOLD);
+        int c = getch();
+        endwin();
+        return;
     }
-
-    mysql_free_result(res);
-    mysql_close(conn);
-    endwin();
-    return;
 }

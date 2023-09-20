@@ -4,18 +4,33 @@
 void mainMenu(struct User u)
 {
     int option;
-    system("clear");
-    printf("\n\n\t\t======= ATM =======\n\n");
-    printf("\n\t\t-->> Feel free to choose one of the options below <<--\n");
-    printf("\n\t\t[1]- Create a new account\n");
-    printf("\n\t\t[2]- Update account information\n");
-    printf("\n\t\t[3]- Check accounts\n");
-    printf("\n\t\t[4]- Check list of owned account\n");
-    printf("\n\t\t[5]- Make Transaction\n");
-    printf("\n\t\t[6]- Remove existing account\n");
-    printf("\n\t\t[7]- Transfer ownership\n");
-    printf("\n\t\t[8]- Exit\n");
-    scanf("%d", &option);
+    initscr();
+    clear();
+    start_color();
+    curs_set(0);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    attron(COLOR_PAIR(2) | A_BOLD);
+    mvprintw(3, (maxX / 2 - strlen("Welcome Back, choose one of the options to proceed")/2), "Welcome Back, choose one of the options to proceed");
+    refresh();
+    attroff(COLOR_PAIR(2) | A_BOLD);
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(7, (maxX / 2 - strlen("[1] New Account") / 2), "[1] New Account");
+    mvprintw(9, (maxX / 2 - strlen("[2] Update Account") / 2), "[2] Update Account");
+    mvprintw(11,( maxX / 2 - strlen("[3] Check Accounts") / 2), "[3] Check Accounts");
+    mvprintw(13,( maxX / 2 - strlen("[4] Check Owned Accounts") / 2), "[4] Check Owned Accounts");
+    mvprintw(15,( maxX / 2 - strlen("[5] Make Transaction") / 2), "[5] Make Transaction");
+    mvprintw(17,( maxX / 2 - strlen("[6] Remove existing Account") / 2), "[6] Remove existing Account");
+    mvprintw(19,( maxX / 2 - strlen("[7] Transfer Ownership") / 2), "[7] Transfer Ownership");
+    mvprintw(21,( maxX / 2 - strlen("[8] Exit") / 2), "[8] Exit");
+    refresh();
+    attroff(COLOR_PAIR(1) | A_BOLD);
+    noecho();
+    scanw("%d", &option);
+    echo();
 
     switch (option)
     {
@@ -45,11 +60,10 @@ void mainMenu(struct User u)
         // student TODO : add your **Transfer owner** function
         // here
         break;
-    case 8:
-        exit(1);
-        break;
     default:
-        printf("Invalid operation!\n");
+        clear();
+        endwin();
+        exit(1);
     }
 };
 
@@ -73,7 +87,7 @@ void startMenu()
     refresh();
     attroff(COLOR_PAIR(1) | A_BOLD);
     attron(COLOR_PAIR(2) | A_BOLD);
-    mvprintw(maxY / 2, (maxX / 2 - strlen("[1]-LOGIN  [2]-REGISTER NEW USER  [3]-EXIT SYSTEM") / 2), "[1]-LOGIN  [2]-REGISTER NEW USER  [3]-EXIT SYSTEM");
+    mvprintw(maxY / 2, (maxX / 2 - strlen("[1]-LOGIN  [2]-REGISTER  [3]-EXIT SYSTEM") / 2), "[1]-LOGIN  [2]-REGISTER  [3]-EXIT SYSTEM");
     refresh();
     attroff(COLOR_PAIR(2) | A_BOLD);
     noecho();
@@ -82,11 +96,13 @@ void startMenu()
     switch (option)
     {
     case 1:
+        curs_set(2);
         clear();
         loginMenu();
         r = 1;
         break;
     case 2:
+        curs_set(2);
         clear();
         CreateNewUser();
         r = 1;
