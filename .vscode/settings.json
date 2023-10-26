@@ -1,0 +1,14 @@
+{
+    "files.associations": {
+        "*.ejs": "html",
+        "*.html": "html",
+        "*.ruby": "ruby",
+        "*.db": "mysql",
+        "*.sqlite": "sqlite",
+        "*.sql": "sql",
+        "*.rmd": "markdown",
+        "*.java": "java",
+        "*.php": "php",
+        "header.h": "c"
+    }
+}

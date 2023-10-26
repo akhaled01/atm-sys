@@ -9,19 +9,17 @@ struct Date
 };
 
 // all fields for each record of an account
-struct Record
+typedef struct
 {
-    int id;
+    int Accid;
+    char username[255];
     int userId;
-    char name[100];
-    char country[100];
-    int phone;
-    char accountType[10];
-    int accountNbr;
-    double amount;
-    struct Date deposit;
-    struct Date withdraw;
-};
+    char creationdate[255];
+    char country[255];
+    char phoneno[255];
+    double balance;
+    char accountType[255];
+} AccountRecord;
 
 //* struct for user to map from mysql database
 struct User
@@ -40,10 +38,11 @@ bool IsValidAccountType(const char *str);
 int GetUserIdFromUsername(const char *username);
 void LogToFile(const char *filename, const char *text);
 void trim(char *str);
-void errprint(char* errmsg);
+void errprint(char *errmsg);
 char *getTodaysDateAsString();
 // system function
 void CreateNewAcc(struct User u);
 void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
+void UpdateAccInfo(struct User u);
 void startMenu();

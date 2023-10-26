@@ -38,8 +38,7 @@ void mainMenu(struct User u)
         CreateNewAcc(u);
         break;
     case 2:
-        // student TODO : add your **Update account information** function
-        // here
+        UpdateAccInfo(u);
         break;
     case 3:
         // student TODO : add your **Check the details of existing accounts** function

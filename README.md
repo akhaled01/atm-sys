@@ -6,7 +6,6 @@ Yet its something i loved doing.
 
 external libraries used:
 
-1. `<ncurses.h>` for TUI
-2. `<mysql/mysql.h>` for database API implementation
+1. `<mysql/mysql.h>` for database API implementation
 
-<h2>This project incorporates a mysql database, ensure you have the proper libraries and dependencies installed for it to run.</h2>
+## This project incorporates a mysql database, ensure you have the proper libraries and dependencies installed for it to run.
