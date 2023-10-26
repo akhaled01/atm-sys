@@ -151,7 +151,7 @@ void CreateNewAcc(struct User u)
         attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", Balance);
         trim(Balance);
-    } while (strlen(Balance) == 0 || !HasOnlyDigits(Balance));
+    } while (strlen(Balance) == 0 || !HasOnlyDigits(Balance) || strlen(Balance) > 8);
     // Account type
     do
     {
