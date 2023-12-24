@@ -55,14 +55,17 @@ void CreateNewUser()
         {
         case 2:
             errprint("Error executing username check query");
+            getch();
             mysql_close(conn);
             return;
         case 3:
-            errprint("connecting to user database");
+            errprint("error connecting to user database");
+            getch();
             mysql_close(conn);
             return;
         case 1:
             errprint("User Already Exists");
+            getch();
             mysql_close(conn);
             return;
         }
@@ -104,6 +107,7 @@ void CreateNewUser()
 
 void CreateNewAcc(struct User u)
 {
+    char AccID[16];
     char *username = u.name;
     char *pass = u.password;
     char *date = getTodaysDateAsString();
@@ -125,6 +129,22 @@ void CreateNewAcc(struct User u)
     mvprintw(maxY / 8, (maxX / 2 - strlen("R01 BANK NEW ACCOUNT FORM") / 2), "R01 BANK NEW ACCOUNT FORM");
     refresh();
     attroff(COLOR_PAIR(1) | A_BOLD);
+    // AccountID
+    do
+    {
+        mvprintw(6, maxX / 4, "Write A AccountID: ");
+        refresh();
+        attroff(COLOR_PAIR(2) | A_BOLD);
+        scanw("%s", AccID);
+        trim(AccID);
+        if (checkAccIDExist(AccID) == -1)
+        {
+            mvprintw(6, maxX / 4, "ERROR ACCESSING ACC DATABASE FOR ID CHECK");
+            mainMenu(u);
+        }
+
+    } while (strlen(AccID) >= 16 || checkAccIDExist(AccID) == 289);
+
     // Country
     do
     {
@@ -188,8 +208,8 @@ void CreateNewAcc(struct User u)
     char query[1000];
     snprintf(query,
              sizeof(query),
-             "INSERT INTO Accounts (UserName, UserID, CreationDate, Country, PhoneNo, Balance, AccountType) VALUES ('%s', %d, '%s', '%s', '%s', %d, '%s')",
-             u.name, userID, date, country, PhoneNo, atoi(Balance), AccType);
+             "INSERT INTO Accounts (AccountID, UserName, UserID, CreationDate, Country, PhoneNo, Balance, AccountType) VALUES (%d, '%s', %d, '%s', '%s', '%s', %d, '%s')",
+             atoi(AccID), u.name, userID, date, country, PhoneNo, atoi(Balance), AccType);
 
     if (mysql_query(conn, query) != 0)
     {
@@ -440,3 +460,6 @@ void UpdateAccInfo(struct User u)
     endwin();
     mainMenu(u);
 }
+
+
+// TODO: checkspecificAcc 

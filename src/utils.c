@@ -192,3 +192,54 @@ void LogToFile(const char *filename, const char *text)
     fprintf(file, "%s\n", text); // Write the text to the file
     fclose(file);                // Close the file
 }
+
+
+int checkAccIDExist(char *id) {
+    MYSQL *conn = mysql_init(NULL);
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+
+    if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
+    {
+        mysql_close(conn);
+        return -1;
+    }
+
+    char query[256];
+    snprintf(query, sizeof(query), "SELECT COUNT(*) FROM Accounts WHERE AccountID = '%s'", id);
+
+    if (mysql_query(conn, query) != 0)
+    {
+        mysql_close(conn);
+        return -1;
+    }
+
+    res = mysql_store_result(conn);
+    if (res == NULL)
+    {
+        fprintf(stderr, "mysql_store_result() failed\n");
+        mysql_close(conn);
+        return -1;
+    }
+
+    row = mysql_fetch_row(res);
+    if (row == NULL)
+    {
+        fprintf(stderr, "mysql_fetch_row() failed\n");
+        mysql_free_result(res);
+        mysql_close(conn);
+        return -1;
+    }
+
+    int count = atoi(row[0]);
+
+    if (count == 1)
+    {
+        return 289;
+    }
+    
+    mysql_free_result(res);
+    mysql_close(conn);
+
+    return 0;
+}

@@ -46,3 +46,4 @@ void mainMenu(struct User u);
 void checkAllAccounts(struct User u);
 void UpdateAccInfo(struct User u);
 void startMenu();
+int checkAccIDExist(char *id);

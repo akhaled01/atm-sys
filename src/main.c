@@ -20,8 +20,8 @@ void mainMenu(struct User u)
     attron(COLOR_PAIR(1) | A_BOLD);
     mvprintw(7, (maxX / 2 - strlen("[1] New Account") / 2), "[1] New Account");
     mvprintw(9, (maxX / 2 - strlen("[2] Update Account") / 2), "[2] Update Account");
-    mvprintw(11,( maxX / 2 - strlen("[3] Check Accounts") / 2), "[3] Check Accounts");
-    mvprintw(13,( maxX / 2 - strlen("[4] Check Owned Accounts") / 2), "[4] Check Owned Accounts");
+    mvprintw(11, (maxX / 2 - strlen("[3] Check Specific Account") / 2), "[3] Check Specific Account");
+    mvprintw(13,( maxX / 2 - strlen("[4] Check All Accounts") / 2), "[4] Check All Accounts");
     mvprintw(15,( maxX / 2 - strlen("[5] Make Transaction") / 2), "[5] Make Transaction");
     mvprintw(17,( maxX / 2 - strlen("[6] Remove existing Account") / 2), "[6] Remove existing Account");
     mvprintw(19,( maxX / 2 - strlen("[7] Transfer Ownership") / 2), "[7] Transfer Ownership");

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `atm`.`Users` (
 -- Table `atm`.`Accounts`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
-    `AccountID` INT NOT NULL AUTO_INCREMENT,
+    `AccountID` INT NOT NULL,
     `UserName` VARCHAR(255) NOT NULL,
     `UserID` INT NULL,
     `CreationDate` VARCHAR(255) NOT NULL,
@@ -42,5 +42,5 @@ CREATE TABLE IF NOT EXISTS `atm`.`Transactions` (
     `TransactionAmt` DOUBLE NULL,
     PRIMARY KEY (`TransactionID`),
     CONSTRAINT `User-TransactionFK` FOREIGN KEY (`UserName`, `UserID`) REFERENCES `atm`.`Users` (`UserName`, `UserID`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `Account-TransactionFK` FOREIGN KEY (`AccountID`) REFERENCES `atm`.`Accounts` (`AccountID`) ON DELETE CASCADE ON UPDATE CASCADE
+    CONSTRAINT `AccountTransactionFK` FOREIGN KEY (`AccountID`) REFERENCES `atm`.`Accounts` (`AccountID`) ON DELETE CASCADE ON UPDATE CASCADE
 );
