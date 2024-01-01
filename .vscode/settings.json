@@ -9,6 +9,7 @@
         "*.rmd": "markdown",
         "*.java": "java",
         "*.php": "php",
-        "header.h": "c"
+        "header.h": "c",
+        "AccOps.C": "cpp"
     }
 }

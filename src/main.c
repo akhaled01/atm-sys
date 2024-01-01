@@ -45,7 +45,6 @@ void mainMenu(struct User u)
         // here
         break;
     case 4:
-        checkAllAccounts(u);
         break;
     case 5:
         // student TODO : add your **Make transaction** function
