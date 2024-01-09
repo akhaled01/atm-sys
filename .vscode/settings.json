@@ -10,6 +10,8 @@
         "*.java": "java",
         "*.php": "php",
         "header.h": "c",
-        "AccOps.C": "cpp"
-    }
+        "AccOps.C": "cpp",
+        "TransOps.C": "cpp"
+    },
+    "todo-tree.tree.showBadges": true
 }

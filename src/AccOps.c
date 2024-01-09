@@ -7,6 +7,12 @@
 
 // this file includes all the account Operations
 
+
+//FIXME: FIND AND ELIMINATE ANY MEM LEAKS
+
+
+//TODO: MAKE DATE CUSTOMIZABLE
+
 void CreateNewAcc(struct User u)
 {
     char AccID[16];
@@ -138,92 +144,92 @@ void CreateNewAcc(struct User u)
     }
 }
 
-// void checkAllAccounts(struct User u)
-// {
-//     MYSQL *conn;
-//     MYSQL_RES *res;
-//     MYSQL_ROW row;
+void checkAllAccounts(struct User u)
+{
+    MYSQL *conn;
+    MYSQL_RES *res;
+    MYSQL_ROW row;
 
-//     //* ================================================================================
-//     //* execute Selection query
+    //* ================================================================================
+    //* execute Selection query
 
-//     conn = mysql_init(NULL);
+    conn = mysql_init(NULL);
 
-//     if (!mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0))
-//     {
-//         errprint("Error connecting to database");
-//         mysql_close(conn);
-//     }
+    if (!mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0))
+    {
+        errprint("Error connecting to database");
+        mysql_close(conn);
+    }
 
-//     char getAccountsQuery[1000];
-//     snprintf(getAccountsQuery, sizeof(getAccountsQuery),
-//              "SELECT * FROM Accounts WHERE UserName = '%s'",
-//              u.name);
+    char getAccountsQuery[1000];
+    snprintf(getAccountsQuery, sizeof(getAccountsQuery),
+             "SELECT * FROM Accounts WHERE UserName = '%s'",
+             u.name);
 
-//     if (mysql_query(conn, getAccountsQuery))
-//     {
-//         char emsg[1000];
-//         snprintf(emsg, sizeof(emsg), "Error fetching Users '%s'", mysql_error(conn));
-//         errprint(emsg);
-//         mysql_close(conn);
-//     }
+    if (mysql_query(conn, getAccountsQuery))
+    {
+        char emsg[1000];
+        snprintf(emsg, sizeof(emsg), "Error fetching Users '%s'", mysql_error(conn));
+        errprint(emsg);
+        mysql_close(conn);
+    }
 
-//     res = mysql_use_result(conn);
+    res = mysql_use_result(conn);
 
-//     //* ================================================================================
-//     //* Display results
+    //* ================================================================================
+    //* Display results
 
-//     AccountRecord Accounts[1000];
-//     int count = 0;
+    AccountRecord Accounts[1000];
+    int count = 0;
 
-//     initscr();
-//     start_color();
-//     init_pair(1, COLOR_GREEN, COLOR_BLACK);
-//     init_pair(2, COLOR_BLUE, COLOR_BLACK);
-//     init_pair(3, COLOR_RED, COLOR_BLACK);
-//     init_pair(4, COLOR_YELLOW, COLOR_BLACK);
-//     clear();
+    initscr();
+    start_color();
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_RED, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    clear();
 
-//     while ((row = mysql_fetch_row(res)) != NULL)
-//     {
-//         AccountRecord curAcc = Accounts[count];
-//         curAcc.Accid = atoi(row[0]);
-//         strcpy(curAcc.username, row[1]);
-//         curAcc.userId = atoi(row[2]);
-//         strcpy(curAcc.creationdate, row[3]);
-//         strcpy(curAcc.country, row[4]);
-//         strcpy(curAcc.phoneno, row[5]);
-//         curAcc.balance = atoi(row[6]);
-//         strcpy(curAcc.accountType, row[7]);
-//         Accounts[count] = curAcc;
-//         count++;
-//     }
+    while ((row = mysql_fetch_row(res)) != NULL)
+    {
+        AccountRecord curAcc = Accounts[count];
+        curAcc.Accid = atoi(row[0]);
+        strcpy(curAcc.username, row[1]);
+        curAcc.userId = atoi(row[2]);
+        strcpy(curAcc.creationdate, row[3]);
+        strcpy(curAcc.country, row[4]);
+        strcpy(curAcc.phoneno, row[5]);
+        curAcc.balance = atoi(row[6]);
+        strcpy(curAcc.accountType, row[7]);
+        Accounts[count] = curAcc;
+        count++;
+    }
 
-//     attron(COLOR_PAIR(4) | A_BOLD);
-//     printw("\n\tCreation Date | Country of Creation | Associated Phone Number | Account Balance | Account type\n\n\n");
-//     attroff(COLOR_PAIR(4) | A_BOLD);
-//     refresh();
+    attron(COLOR_PAIR(4) | A_BOLD);
+    printw("\n\tCreation Date | Country of Creation | Associated Phone Number | Account Balance | Account type\n\n\n");
+    attroff(COLOR_PAIR(4) | A_BOLD);
+    refresh();
 
-//     attron(COLOR_PAIR(1) | A_BOLD);
-//     for (int i = 0; i < count; i++)
-//     {
-//         printw("\t%s | %s | %s | %.2f | %s\n\n",
-//                Accounts[i].creationdate,
-//                Accounts[i].country,
-//                Accounts[i].phoneno,
-//                Accounts[i].balance,
-//                Accounts[i].accountType);
-//         refresh();
-//         int a = getch();
-//     }
-//     attroff(COLOR_PAIR(1) | A_BOLD);
+    attron(COLOR_PAIR(1) | A_BOLD);
+    for (int i = 0; i < count; i++)
+    {
+        printw("\t%s | %s | %s | %.2f | %s\n\n",
+               Accounts[i].creationdate,
+               Accounts[i].country,
+               Accounts[i].phoneno,
+               Accounts[i].balance,
+               Accounts[i].accountType);
+        refresh();
+        int a = getch();
+    }
+    attroff(COLOR_PAIR(1) | A_BOLD);
 
-//     mysql_free_result(res);
-//     mysql_close(conn);
-//     int c = getch();
-//     endwin();
-//     mainMenu(u);
-// }
+    mysql_free_result(res);
+    mysql_close(conn);
+    int c = getch();
+    endwin();
+    mainMenu(u);
+}
 
 void UpdateAccInfo(struct User u)
 {
@@ -387,24 +393,29 @@ void checkSpecificAcc(struct User u)
     char query[1500];
     snprintf(query,
              sizeof(query),
-             "SELECT * FROM Accounts WHERE AccID = %d",
+             "SELECT * FROM Accounts WHERE AccountID = %d",
              atoi(dID));
 
     if (mysql_query(conn, query))
     {
         errprint("error executing query");
+        errprint((char *)mysql_error(conn));
         mysql_close(conn);
+        endwin();
     }
 
     res = mysql_store_result(conn);
     if (!res)
     {
         errprint("Failed to get query result");
+        errprint((char *)mysql_error(conn));
         mysql_close(conn);
+        endwin();
     }
 
     row = mysql_fetch_row(res);
     AccountRecord *dAccount;
+    dAccount = (AccountRecord *)malloc(sizeof(AccountRecord));
 
     // map to struct
     dAccount->Accid = atoi(row[0]);
@@ -420,8 +431,30 @@ void checkSpecificAcc(struct User u)
     init_pair(4, COLOR_YELLOW, COLOR_BLACK);
     clear();
 
-    // TODO: finish printing Acc Info
-    attron(COLOR_PAIR(2) | A_BOLD);
-    mvprintw(2, 5, "Account Number " + dAccount->Accid);
-    mvprintw(3, 5, strcat("Country Of creation ", dAccount->country));
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(2, 5, "Account Number: %d" , dAccount->Accid);
+    mvprintw(3, 5, "Country Of creation: %s", dAccount->country);
+    mvprintw(4, 5, "Creation Date: %s", dAccount->creationdate);
+    mvprintw(5, 5, "Associated Phone No: %s", dAccount->phoneno);
+    char strBal[100];
+    snprintf(strBal, sizeof(strBal), "%f", dAccount->balance);
+    mvprintw(6, 5, "Current Account Balance: %s", strBal);
+    attroff(COLOR_PAIR(1) | A_BOLD);
+    attron(COLOR_PAIR(4) | A_BOLD);
+    mvprintw(8, 5, "%s", displayAccountInformation(dAccount->creationdate, dAccount->accountType, dAccount->balance));
+    attroff(COLOR_PAIR(4) | A_BOLD);
+    getch();
+    mysql_close(conn);
+    endwin();
+    free(dAccount);
+    mainMenu(u);
 }
+
+//TODO: Finish Deletion Acc
+
+void DelAcc(struct User u) {}
+
+
+//TODO: Finish Transfer Acc
+
+void TransferAcc(struct User u) {}

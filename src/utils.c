@@ -51,8 +51,8 @@ char *getTodaysDateAsString()
     time_t t = time(NULL);
     struct tm *now = localtime(&t);
 
-    char *dateStr = (char *)malloc(sizeof(char) * 11); // "YYYY-MM-DD\0"
-    snprintf(dateStr, 11, "%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
+    char *dateStr = (char *)malloc(sizeof(char) * 40); // "YYYY-MM-DD\0"
+    snprintf(dateStr, 100, "%04d-%02d-%02d", now->tm_year + 1900, now->tm_mon + 1, now->tm_mday);
 
     return dateStr;
 }
@@ -193,8 +193,8 @@ void LogToFile(const char *filename, const char *text)
     fclose(file);                // Close the file
 }
 
-
-int checkAccIDExist(char *id) {
+int checkAccIDExist(char *id)
+{
     MYSQL *conn = mysql_init(NULL);
     MYSQL_RES *res;
     MYSQL_ROW row;
@@ -237,9 +237,54 @@ int checkAccIDExist(char *id) {
     {
         return 289;
     }
-    
+
     mysql_free_result(res);
     mysql_close(conn);
 
     return 0;
+}
+
+char *displayAccountInformation(char *date, char *accountType, double amount)
+{
+    // Assuming the date format is "MM/DD/YYYY"
+    int month, day, year;
+    sscanf(date, "%d-%d-%d", &year, &month, &day);
+
+    double interestRate = 0.0;
+    char *accountTypeName = "";
+
+    if (strcmp(accountType, "savings") == 0)
+    {
+        interestRate = 0.07;
+        accountTypeName = "savings";
+    }
+    else if (strcmp(accountType, "fixed01") == 0)
+    {
+        interestRate = 0.04;
+        accountTypeName = "fixed01 (1 year account)";
+    }
+    else if (strcmp(accountType, "fixed02") == 0)
+    {
+        interestRate = 0.05;
+        accountTypeName = "fixed02 (2 year account)";
+    }
+    else if (strcmp(accountType, "fixed03") == 0)
+    {
+        interestRate = 0.08;
+        accountTypeName = "fixed03 (3 year account)";
+    }
+    else if (strcmp(accountType, "current") == 0)
+    {
+        return "You will not get interests because the account is of type current.\n";
+    }
+    else
+    {
+        return "Invalid account type.\n";
+    }
+
+    double interest = amount * interestRate;
+    char *result;
+    asprintf(&result, "You will get $%.2f as interest on day %d of every month for your account of type %s.\n", interest, day, accountTypeName);
+
+    return result;
 }

@@ -38,10 +38,12 @@ bool IsValidAccountType(const char *str);
 int GetUserIdFromUsername(const char *username);
 void LogToFile(const char *filename, const char *text);
 void trim(char *str);
+char *displayAccountInformation(char *date, char *accountType, double amount);
 void errprint(char *errmsg);
 char *getTodaysDateAsString();
 // system function
 void CreateNewAcc(struct User u);
+void checkAllAccounts(struct User u);
 void mainMenu(struct User u);
 void UpdateAccInfo(struct User u);
 void startMenu();

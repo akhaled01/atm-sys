@@ -14,18 +14,18 @@ void mainMenu(struct User u)
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
     attron(COLOR_PAIR(2) | A_BOLD);
-    mvprintw(3, (maxX / 2 - strlen("Welcome Back, choose one of the options to proceed")/2), "Welcome Back, choose one of the options to proceed");
+    mvprintw(3, (maxX / 2 - strlen("Welcome Back, choose one of the options to proceed") / 2), "Welcome Back, choose one of the options to proceed");
     refresh();
     attroff(COLOR_PAIR(2) | A_BOLD);
     attron(COLOR_PAIR(1) | A_BOLD);
     mvprintw(7, (maxX / 2 - strlen("[1] New Account") / 2), "[1] New Account");
     mvprintw(9, (maxX / 2 - strlen("[2] Update Account") / 2), "[2] Update Account");
     mvprintw(11, (maxX / 2 - strlen("[3] Check Specific Account") / 2), "[3] Check Specific Account");
-    mvprintw(13,( maxX / 2 - strlen("[4] Check All Accounts") / 2), "[4] Check All Accounts");
-    mvprintw(15,( maxX / 2 - strlen("[5] Make Transaction") / 2), "[5] Make Transaction");
-    mvprintw(17,( maxX / 2 - strlen("[6] Remove existing Account") / 2), "[6] Remove existing Account");
-    mvprintw(19,( maxX / 2 - strlen("[7] Transfer Ownership") / 2), "[7] Transfer Ownership");
-    mvprintw(21,( maxX / 2 - strlen("[8] Exit") / 2), "[8] Exit");
+    mvprintw(13, (maxX / 2 - strlen("[4] Check All Accounts") / 2), "[4] Check All Accounts");
+    mvprintw(15, (maxX / 2 - strlen("[5] Make Transaction") / 2), "[5] Make Transaction");
+    mvprintw(17, (maxX / 2 - strlen("[6] Remove existing Account") / 2), "[6] Remove existing Account");
+    mvprintw(19, (maxX / 2 - strlen("[7] Transfer Ownership") / 2), "[7] Transfer Ownership");
+    mvprintw(21, (maxX / 2 - strlen("[8] Exit") / 2), "[8] Exit");
     refresh();
     attroff(COLOR_PAIR(1) | A_BOLD);
     noecho();
@@ -41,10 +41,10 @@ void mainMenu(struct User u)
         UpdateAccInfo(u);
         break;
     case 3:
-        // student TODO : add your **Check the details of existing accounts** function
-        // here
+        checkSpecificAcc(u);
         break;
     case 4:
+        checkAllAccounts(u);
         break;
     case 5:
         // student TODO : add your **Make transaction** function
@@ -120,9 +120,12 @@ void startMenu()
     endwin();
 }
 
+// launch from here
 
 int main()
 {
     startMenu();
+    //  ensure that the terminal is reset
+    system("reset");
     return 0;
 }
