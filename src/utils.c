@@ -238,7 +238,7 @@ int checkAccIDExist(char *id)
 
     if (mysql_query(conn, query) != 0)
     {
-        errprint((char *) mysql_error(conn));
+        errprint((char *)mysql_error(conn));
         mysql_close(conn);
         return -1;
     }
@@ -247,7 +247,7 @@ int checkAccIDExist(char *id)
     if (res == NULL)
     {
         fprintf(stderr, "mysql_store_result() failed\n");
-        errprint((char *) mysql_error(conn));
+        errprint((char *)mysql_error(conn));
         mysql_close(conn);
         return -1;
     }
@@ -256,7 +256,7 @@ int checkAccIDExist(char *id)
     if (row == NULL)
     {
         fprintf(stderr, "mysql_fetch_row() failed\n");
-        errprint((char *) mysql_error(conn));
+        errprint((char *)mysql_error(conn));
         mysql_free_result(res);
         mysql_close(conn);
         return -1;
@@ -323,4 +323,90 @@ char *displayAccountInformation(char *date, char *accountType, double amount)
     asprintf(&result, "You will get $%.2f as interest on day %d of every month for your account of type %s.\n", interest, day, accountTypeName);
 
     return result;
+}
+
+bool isValidDate(const char *dateString)
+{
+    // Check if the date string contains only digits and follows the format "YYYY-MM-DD"
+    for (int i = 0; dateString[i] != '\0'; ++i)
+    {
+        if (!isdigit(dateString[i]) && (i != 4 && i != 7) && dateString[i] != '-')
+        {
+            return false;
+        }
+    }
+
+    int year, month, day;
+    if (sscanf(dateString, "%d-%d-%d", &year, &month, &day) == 3)
+    {
+        if (year >= 1000 && year <= 9999 && month >= 1 && month <= 12 && day >= 1)
+        {
+            switch (month)
+            {
+            case 1:
+            case 3:
+            case 5:
+            case 7:
+            case 8:
+            case 10:
+            case 12:
+                return day <= 31;
+            case 4:
+            case 6:
+            case 9:
+            case 11:
+                return day <= 30;
+            case 2:
+                if ((year % 4 == 0 && year % 100 != 0) || (year % 400 == 0))
+                {
+                    return day <= 29;
+                }
+                else
+                {
+                    return day <= 28;
+                }
+            default:
+                return false;
+            }
+        }
+    }
+    return false;
+}
+
+void mvprintenter(char *str)
+{
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    mvprintw(maxY / 2, maxX / 2 - strlen(str) / 2, str);
+}
+
+// Function to calculate the interest gains
+double calculateInterestGains(const char *inputDate, double initialBalance)
+{
+    // Parse the input date
+    Date date;
+    sscanf(inputDate, "%d-%d-%d", &date.year, &date.month, &date.day);
+
+    // Get the current date (assuming today's date is 2024-01-09)
+    Date currentDate = {2024, 1, 9};
+
+    // Check if the input date is valid
+    if (date.year < 0 || date.month < 1 || date.month > 12 || date.day < 1 || date.day > 31)
+    {
+        mvprintenter("Invalid date format\n");
+        return 0.0;
+    }
+
+    // Calculate the number of days since the input date
+    int daysSinceStart = (currentDate.year - date.year) * 365 +
+                         (currentDate.month - date.month) * 30 +
+                         (currentDate.day - date.day);
+
+    // Assume a fixed annual interest rate (for simplicity)
+    double annualInterestRate = 0.05; // 5%
+
+    // Calculate the interest gains using simple interest formula
+    double interestGains = initialBalance * annualInterestRate * daysSinceStart / 365.0;
+
+    return interestGains;
 }

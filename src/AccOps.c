@@ -8,8 +8,7 @@
 // this file includes all the account Operations
 
 // FIXME: FIND AND ELIMINATE ANY MEM LEAKS
-
-// TODO: MAKE DATE CUSTOMIZABLE
+// TODO: DISPLAY RELEVANT INTEREST GAINS IN CHECK SPECIFIC ACCOUNT
 
 /// @brief Main TUI and DB funcs to create a new account
 /// @param u Current User
@@ -18,7 +17,6 @@ void CreateNewAcc(struct User u)
     char AccID[16];
     char *username = u.name;
     char *pass = u.password;
-    char *date = getTodaysDateAsString();
     char country[100];
     char PhoneNo[100];
     char Balance[100];
@@ -29,6 +27,7 @@ void CreateNewAcc(struct User u)
     curs_set(2);
     start_color();
     init_pair(1, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(4, COLOR_WHITE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
@@ -37,12 +36,14 @@ void CreateNewAcc(struct User u)
     mvprintw(maxY / 8, (maxX / 2 - strlen("R01 BANK NEW ACCOUNT FORM") / 2), "R01 BANK NEW ACCOUNT FORM");
     refresh();
     attroff(COLOR_PAIR(1) | A_BOLD);
+
+    // COLLECT USER INPUT
+    attron(COLOR_PAIR(4) | A_BOLD);
     // AccountID
     do
     {
-        mvprintw(6, maxX / 4, "Write A AccountID: ");
+        mvprintenter("Write A AccountID: ");
         refresh();
-        attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", AccID);
         trim(AccID);
         if (checkAccIDExist(AccID) == -1)
@@ -53,42 +54,71 @@ void CreateNewAcc(struct User u)
 
     } while (strlen(AccID) >= 16 || checkAccIDExist(AccID) == 289);
 
+    // date
+    char *date = NULL;
+    char dopt[1000];
+    clear();
+    curs_set(0);
+    mvprintenter("[1] automatic date entry  [anything] manual date entry ");
+    refresh();
+    scanw("%s", dopt);
+
+    curs_set(1);
+    if (strcasecmp(dopt, "1") == 0)
+    {
+        date = getTodaysDateAsString();
+    }
+    else
+    {
+        date = (char *)malloc(100);
+        do
+        {
+            clear();
+            mvprintenter("Write A Date of creation in YYYY-MM-DD format: ");
+            refresh();
+            scanw("%s", date);
+            trim(date);
+        } while (!isValidDate(date));
+    }
+
     // Country
     do
     {
-        mvprintw(6, maxX / 4, "What country are you in right now: ");
+        clear();
+        mvprintenter("What country are you in right now: ");
         refresh();
-        attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", country);
         trim(country);
     } while (strlen(country) == 0);
     // PhoneNo
     do
     {
-        mvprintw(8, maxX / 4, "Enter Your Phone Number: ");
+        clear();
+        mvprintenter("Enter Your Phone Number: ");
         refresh();
-        attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", PhoneNo);
         trim(PhoneNo);
     } while (strlen(PhoneNo) != 9);
     // Balance
     do
     {
-        mvprintw(10, maxX / 4, "Enter The Balance: ");
+        clear();
+        mvprintenter("Enter the Balance: ");
         refresh();
-        attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", Balance);
         trim(Balance);
     } while (strlen(Balance) == 0 || !HasOnlyDigits(Balance) || strlen(Balance) > 8);
     // Account type
     do
     {
-        mvprintw(12, maxX / 4, "Enter The Account type (please read TOS): ");
+        clear();
+        mvprintenter("Enter The Account type (please read TOS): ");
         refresh();
-        attroff(COLOR_PAIR(2) | A_BOLD);
         scanw("%s", AccType);
         trim(AccType);
     } while (strlen(AccType) == 0 || !IsValidAccountType(AccType));
+
+    attroff(COLOR_PAIR(4) | A_BOLD);
 
     // if all is good, execute a query to insert a new account table
     MYSQL *conn;
@@ -109,8 +139,8 @@ void CreateNewAcc(struct User u)
     int userID = GetUserIdFromUsername(u.name);
     if (userID == -1)
     {
-        mysql_close(conn);
         errprint("ERROR: UNABLE TO GET USERID FROM USER DATABASE");
+        mysql_close(conn);
     }
 
     char query[1000];
@@ -136,8 +166,13 @@ void CreateNewAcc(struct User u)
                  (maxX / 2 - strlen("NEW ACCOUNT SUCCESSFULLY CREATED") / 2),
                  "NEW ACCOUNT SUCCESSFULLY CREATED");
         attroff(COLOR_PAIR(2) | A_BOLD);
-        int c = getch();
+        getch();
         mysql_close(conn);
+        if (date != NULL)
+        {
+            free(date);
+        }
+
         curs_set(1);
         endwin();
         mainMenu(u);
@@ -449,6 +484,10 @@ void checkSpecificAcc(struct User u)
     attroff(COLOR_PAIR(1) | A_BOLD);
     attron(COLOR_PAIR(4) | A_BOLD);
     mvprintw(8, 5, "%s", displayAccountInformation(dAccount->creationdate, dAccount->accountType, dAccount->balance));
+    double gainz = calculateInterestGains(dAccount->creationdate, dAccount->balance);
+    char gainzStr[1000];
+    snprintf(gainzStr, sizeof(gainzStr), "you have gainz worth %d", gainz);
+    mvprintw(10, 5, gainzStr);
     attroff(COLOR_PAIR(4) | A_BOLD);
     getch();
     mysql_close(conn);

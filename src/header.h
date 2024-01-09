@@ -5,10 +5,12 @@
 #include <stdbool.h>
 
 /// @brief Struct to represent Date
-struct Date
+typedef struct
 {
-    int month, day, year;
-};
+    int year;
+    int month;
+    int day;
+} Date;
 
 /// @brief struct type to represent a DB Account Record
 typedef struct
@@ -62,3 +64,6 @@ void TransferAcc(struct User u);
 int Deposit(struct User u, AccountRecord *a, int Amt);
 int Withdraw(struct User u, AccountRecord *a, int Amt);
 void MakeTransaction(struct User u);
+bool isValidDate(const char *dateString);
+void mvprintenter(char *str);
+double calculateInterestGains(const char *inputDate, double initialBalance);
