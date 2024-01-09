@@ -537,9 +537,108 @@ void DelAcc(struct User u)
     mainMenu(u);
 }
 
-// TODO: Finish Transfer Acc
-
 /// @brief Func to transfer Account Ownership. All Associated Transactional records are Updated with it.
 /// @brief Also uses child processes to notify other running sessions of the event
 /// @param u Current User
-void TransferAcc(struct User u) {}
+void TransferAcc(struct User u)
+{
+    MYSQL *conn = mysql_init(NULL);
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char dID[10000];
+
+    initscr();
+    curs_set(1);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(3, COLOR_MAGENTA, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    clear();
+    attron(COLOR_PAIR(2) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Account ID to the desired Account: ") / 2), " Enter the Account ID to the desired Account: ");
+    refresh();
+    scanw("%s", dID);
+
+    int isAccHere = checkAccIDExist(dID);
+
+    if (isAccHere == 0)
+    {
+        errprint("Account Doesn't Exist");
+        mainMenu(u);
+    }
+
+    char duname[1000];
+    clear();
+    mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Desired User to transfer to:  ") / 2), " Enter the Desired User to transfer to:  ");
+    refresh();
+    scanw("%s", duname);
+    attroff(COLOR_PAIR(2) | A_BOLD);
+
+    int duId = GetUserIdFromUsername(duname);
+    if (duId == -1)
+    {
+        errprint("User doesnt exist");
+        mainMenu(u);
+    }
+
+    clear();
+    attron(COLOR_PAIR(3) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen(" NOTE: ALL TRANSACTIONS RELATED TO THIS ACCOUNT WILL BE DELETED, RESTARD WILL BE NEEDED  ") / 2), " NOTE: ALL TRANSACTIONS RELATED TO THIS ACCOUNT WILL BE DELETED, RESTARD WILL BE NEEDED  ");
+    refresh();
+    attroff(COLOR_PAIR(3) | A_BOLD);
+
+    getch();
+
+    // EXECUTE SQL OPS
+    if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
+    {
+        errprint("Cannot connect to database");
+        mysql_close(conn);
+    }
+
+    // delete all transactions associated with the account
+    char query[1500];
+    snprintf(query,
+             sizeof(query),
+             "DELETE FROM Transactions WHERE AccountID = %d",
+             atoi(dID));
+
+    if (mysql_query(conn, query))
+    {
+        errprint("error executing Transaction Deletion query");
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        endwin();
+    }
+
+    // update account table
+    char query2[1500];
+    snprintf(query2,
+             sizeof(query2),
+             "UPDATE Accounts SET UserName = '%s', UserID = %d WHERE AccountID = %d",
+             duname,
+             duId,
+             atoi(dID));
+
+    if (mysql_query(conn, query2))
+    {
+        errprint("error executing Account modification Query");
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        endwin();
+        mainMenu(u);
+    }
+
+    clear();
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen("Transfer Successful!") / 2), "Transfer Successful!");
+    attroff(COLOR_PAIR(1) | A_BOLD);
+
+    // success, free all mem Allocs and go back to main menu
+    mysql_free_result(res);
+    mysql_close(conn);
+    getch();
+    endwin();
+    return;
+}

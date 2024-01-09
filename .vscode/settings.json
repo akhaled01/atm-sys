@@ -13,5 +13,6 @@
         "AccOps.C": "cpp",
         "TransOps.C": "cpp"
     },
-    "todo-tree.tree.showBadges": true
+    "todo-tree.tree.showBadges": true,
+    "C_Cpp.errorSquiggles": "enabled"
 }
