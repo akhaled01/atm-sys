@@ -2,7 +2,7 @@
 OBJ_DIR := target
 
 # List of object files
-objects := $(addprefix $(OBJ_DIR)/, main.o system.o auth.o utils.o AccOps.o)
+objects := $(addprefix $(OBJ_DIR)/, main.o system.o auth.o utils.o AccOps.o TransOps.o)
 
 # Specify the target directory for the executable
 TARGET_DIR := .
