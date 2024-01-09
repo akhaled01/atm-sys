@@ -36,11 +36,7 @@ CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `atm`.`Transactions` (
     `TransactionID` INT NOT NULL AUTO_INCREMENT,
-    `UserName` VARCHAR(255) NOT NULL,
-    `UserID` INT NULL,
     `AccountID` INT NULL,
     `TransactionAmt` DOUBLE NULL,
     PRIMARY KEY (`TransactionID`),
-    CONSTRAINT `User-TransactionFK` FOREIGN KEY (`UserName`, `UserID`) REFERENCES `atm`.`Users` (`UserName`, `UserID`) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT `AccountTransactionFK` FOREIGN KEY (`AccountID`) REFERENCES `atm`.`Accounts` (`AccountID`) ON DELETE CASCADE ON UPDATE CASCADE
 );
