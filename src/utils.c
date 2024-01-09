@@ -234,10 +234,11 @@ int checkAccIDExist(char *id)
     }
 
     char query[256];
-    snprintf(query, sizeof(query), "SELECT COUNT(*) FROM Accounts WHERE AccountID = '%s'", id);
+    snprintf(query, sizeof(query), "SELECT COUNT(*) FROM Accounts WHERE AccountID = %d", atoi(id));
 
     if (mysql_query(conn, query) != 0)
     {
+        errprint((char *) mysql_error(conn));
         mysql_close(conn);
         return -1;
     }
@@ -246,6 +247,7 @@ int checkAccIDExist(char *id)
     if (res == NULL)
     {
         fprintf(stderr, "mysql_store_result() failed\n");
+        errprint((char *) mysql_error(conn));
         mysql_close(conn);
         return -1;
     }
@@ -254,6 +256,7 @@ int checkAccIDExist(char *id)
     if (row == NULL)
     {
         fprintf(stderr, "mysql_fetch_row() failed\n");
+        errprint((char *) mysql_error(conn));
         mysql_free_result(res);
         mysql_close(conn);
         return -1;
@@ -261,7 +264,7 @@ int checkAccIDExist(char *id)
 
     int count = atoi(row[0]);
 
-    if (count == 1)
+    if (count >= 1)
     {
         return 289;
     }

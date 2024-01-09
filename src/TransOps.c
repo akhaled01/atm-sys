@@ -97,9 +97,11 @@ void MakeTransaction(struct User u)
     initscr();
     curs_set(1);
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
     clear();
+    attron(COLOR_PAIR(2) | A_BOLD);
     mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Account ID to the desired Account: ") / 2), " Enter the Account ID to the desired Account: ");
     refresh();
     scanw("%s", dID);
@@ -211,6 +213,7 @@ void MakeTransaction(struct User u)
     }
 
     clear();
+    attroff(COLOR_PAIR(2) | A_BOLD);
     attron(COLOR_PAIR(1) | A_BOLD);
     mvprintw(maxY / 2, (maxX / 2 - strlen("Transaction Successful!") / 2), "Transaction Successful!");
     attroff(COLOR_PAIR(1) | A_BOLD);
