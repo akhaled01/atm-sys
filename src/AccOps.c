@@ -7,14 +7,12 @@
 
 // this file includes all the account Operations
 
+// FIXME: FIND AND ELIMINATE ANY MEM LEAKS
 
-//FIXME: FIND AND ELIMINATE ANY MEM LEAKS
-
-
-//TODO: MAKE DATE CUSTOMIZABLE
+// TODO: MAKE DATE CUSTOMIZABLE
 
 /// @brief Main TUI and DB funcs to create a new account
-/// @param u Current User 
+/// @param u Current User
 void CreateNewAcc(struct User u)
 {
     char AccID[16];
@@ -147,7 +145,7 @@ void CreateNewAcc(struct User u)
 }
 
 /// @brief Outputs list of all accounts
-/// @param u current User 
+/// @param u current User
 void checkAllAccounts(struct User u)
 {
     MYSQL *conn;
@@ -377,7 +375,7 @@ void UpdateAccInfo(struct User u)
 }
 
 /// @brief Function to check details of a Specific Account
-/// @brief Implements DB 
+/// @brief Implements DB
 /// @param u Current User
 void checkSpecificAcc(struct User u)
 {
@@ -441,7 +439,7 @@ void checkSpecificAcc(struct User u)
     clear();
 
     attron(COLOR_PAIR(1) | A_BOLD);
-    mvprintw(2, 5, "Account Number: %d" , dAccount->Accid);
+    mvprintw(2, 5, "Account Number: %d", dAccount->Accid);
     mvprintw(3, 5, "Country Of creation: %s", dAccount->country);
     mvprintw(4, 5, "Creation Date: %s", dAccount->creationdate);
     mvprintw(5, 5, "Associated Phone No: %s", dAccount->phoneno);
@@ -459,16 +457,89 @@ void checkSpecificAcc(struct User u)
     mainMenu(u);
 }
 
-//TODO: Finish Deletion Acc
-
 /// @brief Func to delete Account. All Associated Transactional records are deleted with it
 /// @param u Current User
-void DelAcc(struct User u) {}
+void DelAcc(struct User u)
+{
+    MYSQL *conn = mysql_init(NULL);
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+    char dID[10000];
 
+    initscr();
+    curs_set(1);
+    init_pair(1, COLOR_GREEN, COLOR_BLACK);
+    init_pair(2, COLOR_WHITE, COLOR_BLACK);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    clear();
+    attron(COLOR_PAIR(2) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Account ID to the desired Account: ") / 2), " Enter the Account ID to the desired Account: ");
+    refresh();
+    scanw("%s", dID);
 
-//TODO: Finish Transfer Acc
+    int isAccHere = checkAccIDExist(dID);
 
-/// @brief Func to transfer Account Ownership. All Associated Transactional records are Updated with it. 
+    if (isAccHere == 0)
+    {
+        errprint("Account Doesn't Exist");
+        mainMenu(u);
+    }
+
+    if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
+    {
+        errprint("Cannot connect to database");
+        mysql_close(conn);
+    }
+
+    // del all transctions related to account
+    char query[1500];
+    snprintf(query,
+             sizeof(query),
+             "DELETE FROM Transactions WHERE AccountID = %d",
+             atoi(dID));
+
+    if (mysql_query(conn, query))
+    {
+        errprint("error executing Transaction Deletion query");
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        endwin();
+    }
+
+    // del Account from DB
+
+    char query2[1500];
+    snprintf(query2,
+             sizeof(query2),
+             "DELETE FROM Accounts WHERE AccountID = %d",
+             atoi(dID));
+
+    if (mysql_query(conn, query2))
+    {
+        errprint("error executing main Account Deletion query");
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        endwin();
+    }
+
+    clear();
+    attroff(COLOR_PAIR(2) | A_BOLD);
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintw(maxY / 2, (maxX / 2 - strlen("Deletion Operation Successful!") / 2), "Deletion Operation Successful!");
+    attroff(COLOR_PAIR(1) | A_BOLD);
+
+    // success, free all mem Allocs and go back to main menu
+    mysql_free_result(res);
+    mysql_close(conn);
+    getch();
+    endwin();
+    mainMenu(u);
+}
+
+// TODO: Finish Transfer Acc
+
+/// @brief Func to transfer Account Ownership. All Associated Transactional records are Updated with it.
 /// @brief Also uses child processes to notify other running sessions of the event
 /// @param u Current User
 void TransferAcc(struct User u) {}
