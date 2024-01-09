@@ -13,6 +13,8 @@
 
 //TODO: MAKE DATE CUSTOMIZABLE
 
+/// @brief Main TUI and DB funcs to create a new account
+/// @param u Current User 
 void CreateNewAcc(struct User u)
 {
     char AccID[16];
@@ -144,6 +146,8 @@ void CreateNewAcc(struct User u)
     }
 }
 
+/// @brief Outputs list of all accounts
+/// @param u current User 
 void checkAllAccounts(struct User u)
 {
     MYSQL *conn;
@@ -231,6 +235,8 @@ void checkAllAccounts(struct User u)
     mainMenu(u);
 }
 
+/// @brief Updates specified Account
+/// @param u Current User
 void UpdateAccInfo(struct User u)
 {
     MYSQL *conn;
@@ -370,6 +376,9 @@ void UpdateAccInfo(struct User u)
     mainMenu(u);
 }
 
+/// @brief Function to check details of a Specific Account
+/// @brief Implements DB 
+/// @param u Current User
 void checkSpecificAcc(struct User u)
 {
     MYSQL *conn = mysql_init(NULL);
@@ -452,9 +461,14 @@ void checkSpecificAcc(struct User u)
 
 //TODO: Finish Deletion Acc
 
+/// @brief Func to delete Account. All Associated Transactional records are deleted with it
+/// @param u Current User
 void DelAcc(struct User u) {}
 
 
 //TODO: Finish Transfer Acc
 
+/// @brief Func to transfer Account Ownership. All Associated Transactional records are Updated with it. 
+/// @brief Also uses child processes to notify other running sessions of the event
+/// @param u Current User
 void TransferAcc(struct User u) {}

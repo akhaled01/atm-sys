@@ -2,6 +2,7 @@
 #include <mysql/mysql.h>
 #include <ncurses.h>
 
+/// @brief MAIN LOGIN TUI 
 void loginMenu()
 {
     MYSQL *conn;

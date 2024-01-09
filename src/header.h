@@ -3,12 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 #include <stdbool.h>
+
+/// @brief Struct to represent Date
 struct Date
 {
     int month, day, year;
 };
 
-// all fields for each record of an account
+/// @brief struct type to represent a DB Account Record
 typedef struct
 {
     int Accid;
@@ -21,17 +23,24 @@ typedef struct
     char accountType[255];
 } AccountRecord;
 
-//* struct for user to map from mysql database
+typedef struct
+{
+    int TransactionID;
+    char username[255];
+    int userId;
+    int AccID;
+    double TransAmt;
+} TransRecord;
+
+/// @brief struct type to represent a DB Account Record
 struct User
 {
     char name[500];
     char password[500];
 };
 
-// authentication functions
 void loginMenu();
 void CreateNewUser();
-// utilities
 int checkUsernameExists(const char *userName);
 bool HasOnlyDigits(const char *str);
 bool IsValidAccountType(const char *str);
@@ -41,10 +50,15 @@ void trim(char *str);
 char *displayAccountInformation(char *date, char *accountType, double amount);
 void errprint(char *errmsg);
 char *getTodaysDateAsString();
-// system function
 void CreateNewAcc(struct User u);
 void checkAllAccounts(struct User u);
+void checkSpecificAcc(struct User u);
 void mainMenu(struct User u);
 void UpdateAccInfo(struct User u);
 void startMenu();
 int checkAccIDExist(char *id);
+void DelAcc(struct User u);
+void TransferAcc(struct User u);
+int Deposit(struct User u, AccountRecord *a, int Amt);
+int Withdraw(struct User u, AccountRecord *a, int Amt);
+void MakeTransaction(struct User u);

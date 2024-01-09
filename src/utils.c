@@ -10,9 +10,12 @@
 #include <stdbool.h>
 #include <ncurses.h>
 
+/// @brief Function to check if a username exists in the Users DB
+/// @param userName Username to check against DB records
+/// @return 0 on success, 3 OR 2 if DB conn ERR, 1 if Username found
 int checkUsernameExists(const char *userName)
 {
-    MYSQL *conn;
+    MYSQL *conn = mysql_init(NULL);
     MYSQL_RES *res;
     MYSQL_ROW row;
 
@@ -46,6 +49,8 @@ int checkUsernameExists(const char *userName)
     return 0;
 }
 
+/// @brief Gets the current date from system
+/// @return current date as a string
 char *getTodaysDateAsString()
 {
     time_t t = time(NULL);
@@ -57,6 +62,8 @@ char *getTodaysDateAsString()
     return dateStr;
 }
 
+/// @brief Trims string
+/// @param str trimmed string
 void trim(char *str)
 {
     char *end;
@@ -77,18 +84,27 @@ void trim(char *str)
     end[1] = '\0';
 }
 
+/// @brief Prints a error message in ncurses
+/// @param errmsg Error Message to print
 void errprint(char *errmsg)
 {
     clear();
     init_pair(9, COLOR_RED, COLOR_BLACK);
     attron(COLOR_PAIR(9) | A_BOLD);
-    mvprintw(0, 0, "%s", errmsg);
+    int maxY, maxX;
+    getmaxyx(stdscr, maxY, maxX);
+    char errmsgM[1000];
+    snprintf(errmsgM, sizeof(errmsgM), "%s", errmsg);
+    mvprintw(maxY / 2, (maxX / 2 - strlen(errmsgM) / 2), "%s", errmsgM);
     attroff(COLOR_PAIR(9) | A_BOLD);
     getch();
     endwin();
     return;
 }
 
+/// @brief Checks if string only has digits
+/// @param str String to check
+/// @return true if only digits, false otherwise
 bool HasOnlyDigits(const char *str)
 {
     bool dotFound = false;
@@ -113,6 +129,9 @@ bool HasOnlyDigits(const char *str)
     return true;
 }
 
+/// @brief Func to check if Account Type is valid
+/// @param str Account Type
+/// @return true if valid, false otherwise
 bool IsValidAccountType(const char *str)
 {
     const char *validTypes[] = {"fixed01", "fixed02", "fixed03", "current", "savings"};
@@ -129,6 +148,9 @@ bool IsValidAccountType(const char *str)
     return false;
 }
 
+/// @brief Scans DB for userID from Username
+/// @param username desired Uname
+/// @return -1 if err or not found, userID otherwise
 int GetUserIdFromUsername(const char *username)
 {
     MYSQL *conn = mysql_init(NULL);
@@ -175,6 +197,9 @@ int GetUserIdFromUsername(const char *username)
     return userId;
 }
 
+/// @brief Logs Errors To file
+/// @param filename file to log to
+/// @param text text to log
 void LogToFile(const char *filename, const char *text)
 {
     FILE *file = fopen(filename, "a"); // Open the file in "append" mode
@@ -193,6 +218,9 @@ void LogToFile(const char *filename, const char *text)
     fclose(file);                // Close the file
 }
 
+/// @brief Checks if Account ID exists
+/// @param id Desired ID
+/// @return -1 if ERR or not found, 0 otherwise
 int checkAccIDExist(char *id)
 {
     MYSQL *conn = mysql_init(NULL);
@@ -244,6 +272,11 @@ int checkAccIDExist(char *id)
     return 0;
 }
 
+/// @brief Function to get a string of the interest rate for Account Ops
+/// @param date date of account creation
+/// @param accountType type of account
+/// @param amount current Balance
+/// @return
 char *displayAccountInformation(char *date, char *accountType, double amount)
 {
     // Assuming the date format is "MM/DD/YYYY"

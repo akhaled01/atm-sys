@@ -1,6 +1,8 @@
 #include "header.h"
 #include <ncurses.h>
 
+/// @brief this is the main Menu, terminal UI implements ncurses
+/// @param u Current User
 void mainMenu(struct User u)
 {
     int option;
@@ -47,24 +49,24 @@ void mainMenu(struct User u)
         checkAllAccounts(u);
         break;
     case 5:
-        // student TODO : add your **Make transaction** function
-        // here
+        MakeTransaction(u);
         break;
     case 6:
-        // student TODO : add your **Remove existing account** function
-        // here
+        DelAcc(u);
         break;
     case 7:
-        // student TODO : add your **Transfer owner** function
-        // here
+        TransferAcc(u);
         break;
     default:
         clear();
         endwin();
+        //  ensure that the terminal is reset
+        system("reset");
         exit(1);
     }
 };
 
+/// @brief Entry point to the Application. 
 void startMenu()
 {
     int r = 0;
@@ -107,6 +109,8 @@ void startMenu()
         break;
     case 3:
         endwin();
+        //  ensure that the terminal is reset
+        system("reset");
         break;
     default:
         clear();
@@ -116,6 +120,7 @@ void startMenu()
         attroff(COLOR_PAIR(3) | A_BOLD);
         int endall = getch();
         endwin();
+        system("reset");
     }
     endwin();
 }
@@ -125,7 +130,5 @@ void startMenu()
 int main()
 {
     startMenu();
-    //  ensure that the terminal is reset
-    system("reset");
     return 0;
 }

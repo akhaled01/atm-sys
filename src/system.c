@@ -5,8 +5,7 @@
 #include <string.h>
 #include <ctype.h>
 
-// THIS FILE CONTAINS THE USER SYSTEM
-
+/// @brief MAIN TUI FOR USER REGISTERATION
 void CreateNewUser()
 {
     MYSQL *conn;
