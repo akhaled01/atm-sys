@@ -8,7 +8,7 @@
 // this file includes all the account Operations
 
 // FIXME: FIND AND ELIMINATE ANY MEM LEAKS
-// TODO: DISPLAY RELEVANT INTEREST GAINS IN CHECK SPECIFIC ACCOUNT
+// TODO: Test audit questions
 
 /// @brief Main TUI and DB funcs to create a new account
 /// @param u Current User
