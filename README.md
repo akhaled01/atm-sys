@@ -12,6 +12,7 @@ This project is a multicomponent ATM system built in C with a mysql database. Th
 
 ## File System (FS)
 
+```bash
 .
 ├── database
 │   └── init.sql
@@ -27,6 +28,8 @@ This project is a multicomponent ATM system built in C with a mysql database. Th
 └── utils.c
 
 2 directories, 10 files
+```
+
 
 ## Database Information
 
@@ -49,11 +52,11 @@ CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
 
 ## Screenshot examples of the project
 
-![](assets/20240111_141834_Screenshot_from 2024-01-11 14-18-05.png)
+![](assets/img1.png)
 
-![](assets/20240111_141857_Screenshot_from 2024-01-11 14-17-56.png)
+![](assets/img2.png)
 
-![](assets/20240111_150816_Screenshot_from 2024-01-11 14-16-30.png)
+![](assets/img3.png)
 
 ## Steps to run
 
