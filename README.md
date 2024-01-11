@@ -1,11 +1,64 @@
-# R01 BANK SYSTEM (atm-managment-system)
+# ATM-SYS
 
-Hey guys, akhaled here<br>
-This project was NOT easy, matter of fact its the biggest undertaking of my life.<br>
-Yet its something i loved doing.
+This project is a multicomponent ATM system built in C with a mysql database. The following features are implemented
 
-external libraries used:
+* Login/Register
+* Create a new account
+* Check the details of existing accounts
+* Update information of existing accounts
+* Remove existing accounts
+* Check list of owned accounts
+* Make transactions
 
-1. `<mysql/mysql.h>` for database API implementation
+## File System (FS)
 
-## This project incorporates a mysql database, ensure you have the proper libraries and dependencies installed for it to run.
+.
+├── database
+│   └── init.sql
+├── Makefile
+├── README.md
+└── src
+├── AccOps.c
+├── auth.c
+├── header.h
+├── main.c
+├── system.c
+├── TransOps.c
+└── utils.c
+
+2 directories, 10 files
+
+## Database Information
+
+As said before, this project incorporates a mySQL DB that is used for storage. Here is an Example of one of the tables.
+
+```SQL
+CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
+    `AccountID` INT NOT NULL,
+    `UserName` VARCHAR(255) NOT NULL,
+    `UserID` INT NULL,
+    `CreationDate` VARCHAR(255) NOT NULL,
+    `Country` VARCHAR(255) NOT NULL,
+    `PhoneNo` VARCHAR(255) NOT NULL,
+    `Balance` DOUBLE NOT NULL,
+    `AccountType` VARCHAR(255) NOT NULL,
+    PRIMARY KEY (`AccountID`),
+    CONSTRAINT `User-AccountsFK` FOREIGN KEY (`UserName`, `UserID`) REFERENCES `atm`.`Users` (`UserName`, `UserID`) ON DELETE CASCADE ON UPDATE CASCADE
+);
+```
+
+## Screenshot examples of the project
+
+![](assets/20240111_141834_Screenshot_from 2024-01-11 14-18-05.png)
+
+![](assets/20240111_141857_Screenshot_from 2024-01-11 14-17-56.png)
+
+![](assets/20240111_150816_Screenshot_from 2024-01-11 14-16-30.png)
+
+## Steps to run
+
+1. clone this repo
+2. Ensure mysql, and all proper dependencies are installed
+3. run `make`
+
+## Done By akhaled01 (Abdulrahman Idrees)
