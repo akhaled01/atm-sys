@@ -63,5 +63,6 @@ CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
 1. clone this repo
 2. Ensure mysql, and all proper dependencies are installed
 3. run `make`
+4. run `./atm`
 
 ## Done By akhaled01 (Abdulrahman Idrees)
