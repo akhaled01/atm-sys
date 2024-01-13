@@ -1,6 +1,10 @@
 # ATM-SYS
 
-This project is a multicomponent ATM system built in C with a mysql database. The following features are implemented
+This project is a multicomponent ATM system built in C with a mysql database.
+
+<a href="https://docs.microsoft.com/en-us/cpp/?view=msvc-170" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/danielcranney/readme-generator/main/public/icons/skills/c-colored.svg" width="36" height="36" alt="C" /></a>
+
+## Implemented Features
 
 * Login/Register
 * Create a new account
@@ -29,7 +33,6 @@ This project is a multicomponent ATM system built in C with a mysql database. Th
 
 2 directories, 10 files
 ```
-
 
 ## Database Information
 
