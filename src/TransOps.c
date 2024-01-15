@@ -65,7 +65,7 @@ int Withdraw(struct User u, AccountRecord *a, int Amt)
 
     if (mAmt < 0)
     {
-        mAmt = 0;
+        return 1;
     }
 
     char query[1500];
@@ -105,6 +105,12 @@ void MakeTransaction(struct User u)
     mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Account ID to the desired Account: ") / 2), " Enter the Account ID to the desired Account: ");
     refresh();
     scanw("%s", dID);
+
+    if (checkAuth(u, dID) == false)
+    {
+        errprint("You are not authorized to perform this action on this account");
+        mainMenu(u);
+    }
 
     if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
     {
@@ -176,19 +182,23 @@ void MakeTransaction(struct User u)
     case 1:
         if (Withdraw(u, dAccount, mainAmt))
         {
-            errprint("WITHDRAWAL FAILED");
+            errprint("WITHDRAWAL FAILED, check your Balance");
             free(dAccount);
             mysql_free_result(res);
             mysql_close(conn);
+            endwin();
+            mainMenu(u);
         }
         break;
     case 2:
         if (Deposit(u, dAccount, mainAmt))
         {
-            errprint("WITHDRAWAL FAILED");
+            errprint("DEPOSIT FAILED");
             mysql_free_result(res);
             free(dAccount);
             mysql_close(conn);
+            endwin();
+            mainMenu(u);
         }
         break;
     default:
@@ -196,7 +206,8 @@ void MakeTransaction(struct User u)
         free(dAccount);
         mysql_free_result(res);
         mysql_close(conn);
-        break;
+        endwin();
+        mainMenu(u);
     }
 
     char query2[1500];

@@ -25,26 +25,30 @@ void CreateNewUser()
     int maxX, maxY;
     getmaxyx(stdscr, maxY, maxX);
     attron(COLOR_PAIR(4) | A_BOLD);
-    mvprintw(3, (maxX / 2 - strlen("THANKS FOR CHOOSING OUR BANK") / 2), "THANKS FOR CHOOSING OUR BANK");
-    refresh();
     do
     {
-        mvprintw(6, (maxX / 2 - strlen("THANKS FOR CHOOSING OUR BANK") / 2), "Write a Username: ");
+        mvprintenter("Write a Username: ");
         refresh();
         scanw("%s", userName);
         trim(userName);
+        werase(stdscr);
     } while (strcmp(userName, "") == 0);
 
     do
     {
-        refresh();
-        printw("\n\tEnter a secure password: ");
+        werase(stdscr);
         refresh();
         noecho();
+        mvprintenter("Enter a secure password: ");
+        refresh();
         scanw("%s", userPwd);
-        echo();
         trim(userPwd);
+        werase(stdscr);
+        refresh();
+        echo();
     } while (strcmp(userPwd, "") == 0);
+
+    attroff(COLOR_PAIR(4) | A_BOLD);
 
     //* ================================================================================
     //* check if username exists

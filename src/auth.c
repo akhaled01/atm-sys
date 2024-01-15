@@ -2,7 +2,7 @@
 #include <mysql/mysql.h>
 #include <ncurses.h>
 
-/// @brief MAIN LOGIN TUI 
+/// @brief MAIN LOGIN TUI
 void loginMenu()
 {
     MYSQL *conn;
@@ -15,25 +15,23 @@ void loginMenu()
     initscr();
     start_color();
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
-    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(2, COLOR_CYAN, COLOR_BLACK);
     init_pair(3, COLOR_RED, COLOR_BLACK);
     int maxY, maxX;
     getmaxyx(stdscr, maxY, maxX);
     // title display
-    attron(COLOR_PAIR(1) | A_BOLD);
-    mvprintw(maxY / 8, (maxX / 2 - strlen("WELCOME TO R01 BANK") / 2), "WELCOME TO R01 BANK");
-    refresh();
-    attroff(COLOR_PAIR(1) | A_BOLD);
     attron(COLOR_PAIR(2) | A_BOLD);
-    mvprintw(maxY/5, maxX/3, "Enter Username: ");
-    refresh();
+    mvprintenter("Enter Username: ");
     scanw("%s", userName);
-    mvprintw(maxY/3, maxX/3, "Enter Password: ");
-    attroff(COLOR_PAIR(2) | A_BOLD);
+    werase(stdscr);
     refresh();
     noecho();
+    mvprintenter("Enter Password: ");
+    refresh();
     scanw("%s", userPwd);
     echo();
+
+    attroff(COLOR_PAIR(2) | A_BOLD);
 
     conn = mysql_init(NULL);
 
@@ -118,10 +116,9 @@ void loginMenu()
     {
         clear();
         attron(COLOR_PAIR(3) | A_BOLD);
-        mvprintw(0, 0, "Login Failed");
+        errprint("Login Failed");
         refresh();
         attroff(COLOR_PAIR(3) | A_BOLD);
-        int c = getch();
         endwin();
         return;
     }

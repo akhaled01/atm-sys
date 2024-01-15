@@ -7,9 +7,6 @@
 
 // this file includes all the account Operations
 
-// FIXME: FIND AND ELIMINATE ANY MEM LEAKS
-// TODO: Test audit questions
-
 /// @brief Main TUI and DB funcs to create a new account
 /// @param u Current User
 void CreateNewAcc(struct User u)
@@ -146,8 +143,8 @@ void CreateNewAcc(struct User u)
     char query[1000];
     snprintf(query,
              sizeof(query),
-             "INSERT INTO Accounts (AccountID, UserName, UserID, CreationDate, Country, PhoneNo, Balance, AccountType) VALUES (%d, '%s', %d, '%s', '%s', '%s', %d, '%s')",
-             atoi(AccID), u.name, userID, date, country, PhoneNo, atoi(Balance), AccType);
+             "INSERT INTO Accounts (AccountID, UserName, UserID, CreationDate, Country, PhoneNo, Balance, AccountType) VALUES (%d, '%s', %d, '%s', '%s', '%s', %f, '%s')",
+             atoi(AccID), u.name, userID, date, country, PhoneNo, strtod(Balance, NULL), AccType);
 
     if (mysql_query(conn, query) != 0)
     {
@@ -289,6 +286,11 @@ void UpdateAccInfo(struct User u)
     printw("\n\t Enter the Account ID to the desired Account: ");
     refresh();
     scanw("%s", dID);
+    if (checkAuth(u, dID) == false)
+    {
+        errprint("You are not authorized to perform this action on this account");
+        mainMenu(u);
+    }
     do
     {
         printw("\n\t What field do you desire to change? ([1] Phone Number, [2] Country): ");
@@ -426,6 +428,12 @@ void checkSpecificAcc(struct User u)
     refresh();
     scanw("%s", dID);
 
+    if (checkAuth(u, dID) == false)
+    {
+        errprint("You are not authorized to perform this action on this account");
+        mainMenu(u);
+    }
+
     if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
     {
         errprint("Cannot connect to database");
@@ -474,25 +482,51 @@ void checkSpecificAcc(struct User u)
     clear();
 
     attron(COLOR_PAIR(1) | A_BOLD);
-    mvprintw(2, 5, "Account Number: %d", dAccount->Accid);
-    mvprintw(3, 5, "Country Of creation: %s", dAccount->country);
-    mvprintw(4, 5, "Creation Date: %s", dAccount->creationdate);
-    mvprintw(5, 5, "Associated Phone No: %s", dAccount->phoneno);
-    char strBal[100];
-    snprintf(strBal, sizeof(strBal), "%f", dAccount->balance);
-    mvprintw(6, 5, "Current Account Balance: %s", strBal);
-    attroff(COLOR_PAIR(1) | A_BOLD);
-    attron(COLOR_PAIR(4) | A_BOLD);
-    mvprintw(8, 5, "%s", displayAccountInformation(dAccount->creationdate, dAccount->accountType, dAccount->balance));
-    double gainz = calculateInterestGains(dAccount->creationdate, dAccount->balance);
-    char gainzStr[1000];
-    snprintf(gainzStr, sizeof(gainzStr), "you have gainz worth %d", gainz);
-    mvprintw(10, 5, gainzStr);
-    attroff(COLOR_PAIR(4) | A_BOLD);
+    curs_set(0);
+    char dAccountNum[1000];
+    snprintf(dAccountNum, sizeof(dAccountNum), "Account Number: %d", dAccount->Accid);
+    mvprintenter(dAccountNum);
+    refresh();
     getch();
+
+    char countryInfo[1000];
+    sprintf(countryInfo, "Country Of creation: %s", dAccount->country);
+    mvprintenter(countryInfo);
+    refresh();
+    getch();
+
+    char dateInfo[1000];
+    sprintf(dateInfo, "Creation Date: %s", dAccount->creationdate);
+    mvprintenter(dateInfo);
+    refresh();
+    getch();
+
+    char phoneInfo[1000];
+    sprintf(phoneInfo, "Associated Phone No: %s", dAccount->phoneno);
+    mvprintenter(phoneInfo);
+    refresh();
+    getch();
+
+    char strBal[100];
+    snprintf(strBal, sizeof(strBal), "Current Account Balance: %.2f", dAccount->balance);
+    mvprintenter(strBal);
+    refresh();
+    getch();
+
+    attroff(COLOR_PAIR(1) | A_BOLD);
+
+    attron(COLOR_PAIR(4) | A_BOLD);
+
+    char *inInfo = MainAccountInterestInfo(dAccount->creationdate, dAccount->balance, dAccount->accountType);
+    mvprintenter(inInfo);
+    refresh();
+    getch();
+    attroff(COLOR_PAIR(4) | A_BOLD);
     mysql_close(conn);
     endwin();
     free(dAccount);
+    free(inInfo);
+    curs_set(1);
     mainMenu(u);
 }
 
@@ -522,6 +556,12 @@ void DelAcc(struct User u)
     if (isAccHere == 0)
     {
         errprint("Account Doesn't Exist");
+        mainMenu(u);
+    }
+
+    if (checkAuth(u, dID) == false)
+    {
+        errprint("You are not authorized to perform this action on this account");
         mainMenu(u);
     }
 
@@ -679,5 +719,5 @@ void TransferAcc(struct User u)
     mysql_close(conn);
     getch();
     endwin();
-    return;
+    mainMenu(u);
 }

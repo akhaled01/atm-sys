@@ -53,19 +53,10 @@ CREATE TABLE IF NOT EXISTS `atm`.`Accounts` (
     CONSTRAINT `User-AccountsFK` FOREIGN KEY (`UserName`, `UserID`) REFERENCES `atm`.`Users` (`UserName`, `UserID`) ON DELETE CASCADE ON UPDATE CASCADE
 );
 ```
-
-## Screenshot examples of the project
-
-![](assets/img1.png)
-
-![](assets/img2.png)
-
-![](assets/img3.png)
-
 ## Steps to run
 
 1. clone this repo
-2. Ensure mysql, and all proper dependencies are installed
+2. Ensure mysql, and all proper dependencies are installed. 
 3. run `make`
 4. run `./atm`
 

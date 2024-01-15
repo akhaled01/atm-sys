@@ -66,4 +66,5 @@ int Withdraw(struct User u, AccountRecord *a, int Amt);
 void MakeTransaction(struct User u);
 bool isValidDate(const char *dateString);
 void mvprintenter(char *str);
-double calculateInterestGains(const char *inputDate, double initialBalance);
+char *MainAccountInterestInfo(const char *inputDate, double initialBalance, const char *accountType);
+bool checkAuth(struct User u, char *dID);

@@ -134,7 +134,7 @@ bool HasOnlyDigits(const char *str)
 /// @return true if valid, false otherwise
 bool IsValidAccountType(const char *str)
 {
-    const char *validTypes[] = {"fixed01", "fixed02", "fixed03", "current", "savings"};
+    const char *validTypes[] = {"fixed01", "fixed02", "fixed03", "current", "savings", "saving"};
     const int numTypes = sizeof(validTypes) / sizeof(validTypes[0]);
 
     for (int i = 0; i < numTypes; i++)
@@ -280,50 +280,59 @@ int checkAccIDExist(char *id)
 /// @param accountType type of account
 /// @param amount current Balance
 /// @return
-char *displayAccountInformation(char *date, char *accountType, double amount)
-{
-    // Assuming the date format is "MM/DD/YYYY"
-    int month, day, year;
-    sscanf(date, "%d-%d-%d", &year, &month, &day);
+// char *displayAccountInformation(char *date, char *accountType, double amount)
+// {
+//     // Assuming the date format is "MM/DD/YYYY"
+//     int month, day, year, years;
+//     sscanf(date, "%d-%d-%d", &year, &month, &day);
 
-    double interestRate = 0.0;
-    char *accountTypeName = "";
+//     double interestRate = 0.0;
+//     char *accountTypeName = "";
 
-    if (strcmp(accountType, "savings") == 0)
-    {
-        interestRate = 0.07;
-        accountTypeName = "savings";
-    }
-    else if (strcmp(accountType, "fixed01") == 0)
-    {
-        interestRate = 0.04;
-        accountTypeName = "fixed01 (1 year account)";
-    }
-    else if (strcmp(accountType, "fixed02") == 0)
-    {
-        interestRate = 0.05;
-        accountTypeName = "fixed02 (2 year account)";
-    }
-    else if (strcmp(accountType, "fixed03") == 0)
-    {
-        interestRate = 0.08;
-        accountTypeName = "fixed03 (3 year account)";
-    }
-    else if (strcmp(accountType, "current") == 0)
-    {
-        return "You will not get interests because the account is of type current.\n";
-    }
-    else
-    {
-        return "Invalid account type.\n";
-    }
+//     time_t now;
+//     struct tm deposit_tm = {0};
+//     struct tm *current_tm;
+//     time(&now);
+//     current_tm = localtime(&now);
 
-    double interest = amount * interestRate;
-    char *result;
-    asprintf(&result, "You will get $%.2f as interest on day %d of every month for your account of type %s.\n", interest, day, accountTypeName);
+//     strftime(date, "%d-%d-%d", &deposit_tm, );
+//     years = current_tm->tm_year - deposit_tm.tm_year;
 
-    return result;
-}
+//     if (strcmp(accountType, "savings") == 0 || strcmp(accountType, "saving") == 0)
+//     {
+//         interestRate = 0.07;
+//         accountTypeName = "saving";
+//     }
+//     else if (strcmp(accountType, "fixed01") == 0)
+//     {
+//         interestRate = 0.04;
+//         accountTypeName = "fixed01 (1 year account)";
+//     }
+//     else if (strcmp(accountType, "fixed02") == 0)
+//     {
+//         interestRate = 0.05;
+//         accountTypeName = "fixed02 (2 year account)";
+//     }
+//     else if (strcmp(accountType, "fixed03") == 0)
+//     {
+//         interestRate = 0.08;
+//         accountTypeName = "fixed03 (3 year account)";
+//     }
+//     else if (strcmp(accountType, "current") == 0)
+//     {
+//         return "You will not get interests because the account is of type current.\n";
+//     }
+//     else
+//     {
+//         return "Invalid account type.\n";
+//     }
+
+//     double Monthinterest = (amount * interestRate) / 12;
+//     char *result;
+//     asprintf(&result, "You will get $%.2f as interest on day %d of every month for your account of type %s.\n", Monthinterest, day, accountTypeName);
+
+//     return result;
+// }
 
 bool isValidDate(const char *dateString)
 {
@@ -381,9 +390,10 @@ void mvprintenter(char *str)
 }
 
 // Function to calculate the interest gains
-double calculateInterestGains(const char *inputDate, double initialBalance)
+double calculateInterestGains(const char *inputDate, double initialBalance, const char *accType)
 {
     // Parse the input date
+
     Date date;
     sscanf(inputDate, "%d-%d-%d", &date.year, &date.month, &date.day);
 
@@ -409,4 +419,136 @@ double calculateInterestGains(const char *inputDate, double initialBalance)
     double interestGains = initialBalance * annualInterestRate * daysSinceStart / 365.0;
 
     return interestGains;
+}
+
+/// @brief Method for main interest gainz (Thanks sameer)
+/// @param inputDate date of account opening
+/// @param initialBalance balance of account
+/// @param accountType Account type
+/// @return formatted string of account info
+char *MainAccountInterestInfo(const char *inputDate, double initialBalance, const char *accountType)
+{
+    int depositMonth, depositDay, depositYear;
+    sscanf(inputDate, "%d-%d-%d", &depositYear, &depositMonth, &depositDay);
+    float interest_rate = 0.0;
+
+    if (strcmp(accountType, "savings") == 0 || strcmp(accountType, "saving") == 0)
+    {
+        interest_rate = 0.07;
+    }
+    else if (strcmp(accountType, "fixed01") == 0)
+    {
+        interest_rate = 0.04;
+    }
+    else if (strcmp(accountType, "fixed02") == 0)
+    {
+        interest_rate = 0.05;
+    }
+    else if (strcmp(accountType, "fixed03") == 0)
+    {
+        interest_rate = 0.08;
+    }
+    else if (strcmp(accountType, "current") == 0)
+    {
+        return strdup("You will not get interests because the account is of type current.\n");
+    }
+    else
+    {
+        return strdup("Invalid account type.\n");
+    }
+
+    time_t currentTime = time(NULL);
+    struct tm *localTime = localtime(&currentTime);
+    int currentYear = localTime->tm_year + 1900;
+    int currentMonth = localTime->tm_mon + 1;
+
+    float totalInterest = 0.0;
+    float interestForMonth = 0.0;
+    while (depositYear < currentYear ||
+           (depositYear == currentYear && depositMonth <= currentMonth))
+    {
+        interestForMonth = (initialBalance * interest_rate) / 12;
+        totalInterest += interestForMonth;
+
+        depositMonth++;
+        if (depositMonth > 12)
+        {
+            depositMonth = 1;
+            depositYear++;
+        }
+    }
+
+    if (strcmp(accountType, "fixed01") == 0)
+    {
+        char *result;
+        asprintf(&result, "You will gain $%.2f interest on %d/%d/%d\n", interestForMonth * 12, depositDay, depositMonth, depositYear + 1);
+        return result;
+    }
+    else if (strcmp(accountType, "fixed02") == 0)
+    {
+        char *result;
+        asprintf(&result, "You will gain $%.2f interest on %d/%d/%d\n", interestForMonth * 24, depositDay, depositMonth, depositYear + 2);
+        return result;
+    }
+    else if (strcmp(accountType, "fixed03") == 0)
+    {
+        char *result;
+        asprintf(&result, "You will gain $%.2f interest on %d/%d/%d\n", interestForMonth * 36, depositDay, depositMonth, depositYear + 3);
+        return result;
+    }
+    else
+    {
+        char *result;
+        asprintf(&result, "You will get $%.2f as interest on day %d of every month. Total interest acquired: $%.2f\n", interestForMonth, depositDay, totalInterest);
+        return result;
+    }
+}
+
+/// @brief Checks if user is authorized to perform an account Action
+/// @param u 
+/// @return 
+bool checkAuth(struct User u, char *dID)
+{
+    MYSQL *conn = mysql_init(NULL);
+    MYSQL_RES *res;
+    MYSQL_ROW row;
+
+    if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
+    {
+        mysql_close(conn);
+        return -1;
+    }
+
+    char query[256];
+    snprintf(query, sizeof(query), "SELECT UserName FROM Accounts WHERE AccountID = %d", atoi(dID));
+
+    if (mysql_query(conn, query) != 0)
+    {
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        return -1;
+    }
+
+    res = mysql_store_result(conn);
+    if (res == NULL)
+    {
+        fprintf(stderr, "mysql_store_result() failed\n");
+        errprint((char *)mysql_error(conn));
+        mysql_close(conn);
+        return -1;
+    }
+
+    row = mysql_fetch_row(res);
+    if (row == NULL)
+    {
+        fprintf(stderr, "mysql_fetch_row() failed\n");
+        errprint((char *)mysql_error(conn));
+        mysql_free_result(res);
+        mysql_close(conn);
+        return -1;
+    }
+
+    char *uname = row[0];
+
+    return strcmp(uname, u.name) == 0;  
 }
