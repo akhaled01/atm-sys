@@ -275,65 +275,6 @@ int checkAccIDExist(char *id)
     return 0;
 }
 
-/// @brief Function to get a string of the interest rate for Account Ops
-/// @param date date of account creation
-/// @param accountType type of account
-/// @param amount current Balance
-/// @return
-// char *displayAccountInformation(char *date, char *accountType, double amount)
-// {
-//     // Assuming the date format is "MM/DD/YYYY"
-//     int month, day, year, years;
-//     sscanf(date, "%d-%d-%d", &year, &month, &day);
-
-//     double interestRate = 0.0;
-//     char *accountTypeName = "";
-
-//     time_t now;
-//     struct tm deposit_tm = {0};
-//     struct tm *current_tm;
-//     time(&now);
-//     current_tm = localtime(&now);
-
-//     strftime(date, "%d-%d-%d", &deposit_tm, );
-//     years = current_tm->tm_year - deposit_tm.tm_year;
-
-//     if (strcmp(accountType, "savings") == 0 || strcmp(accountType, "saving") == 0)
-//     {
-//         interestRate = 0.07;
-//         accountTypeName = "saving";
-//     }
-//     else if (strcmp(accountType, "fixed01") == 0)
-//     {
-//         interestRate = 0.04;
-//         accountTypeName = "fixed01 (1 year account)";
-//     }
-//     else if (strcmp(accountType, "fixed02") == 0)
-//     {
-//         interestRate = 0.05;
-//         accountTypeName = "fixed02 (2 year account)";
-//     }
-//     else if (strcmp(accountType, "fixed03") == 0)
-//     {
-//         interestRate = 0.08;
-//         accountTypeName = "fixed03 (3 year account)";
-//     }
-//     else if (strcmp(accountType, "current") == 0)
-//     {
-//         return "You will not get interests because the account is of type current.\n";
-//     }
-//     else
-//     {
-//         return "Invalid account type.\n";
-//     }
-
-//     double Monthinterest = (amount * interestRate) / 12;
-//     char *result;
-//     asprintf(&result, "You will get $%.2f as interest on day %d of every month for your account of type %s.\n", Monthinterest, day, accountTypeName);
-
-//     return result;
-// }
-
 bool isValidDate(const char *dateString)
 {
     // Check if the date string contains only digits and follows the format "YYYY-MM-DD"

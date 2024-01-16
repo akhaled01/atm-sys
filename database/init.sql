@@ -38,5 +38,5 @@ CREATE TABLE IF NOT EXISTS `atm`.`Transactions` (
     `TransactionID` INT NOT NULL AUTO_INCREMENT,
     `AccountID` INT NULL,
     `TransactionAmt` DOUBLE NULL,
-    PRIMARY KEY (`TransactionID`),
+    PRIMARY KEY (`TransactionID`)
 );

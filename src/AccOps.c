@@ -272,28 +272,37 @@ void UpdateAccInfo(struct User u)
     MYSQL *conn;
     MYSQL_RES *res;
     MYSQL_ROW row;
-
-    //* ========================================
-    //* Taking User Input
-
-    char dID[1000], choice[10];
+    char dID[3000], choice[10];
     int ch = 0;
     char Ndata[1000];
 
     initscr();
+    init_pair(1, COLOR_WHITE, COLOR_BLACK);
+
     curs_set(1);
     clear();
-    printw("\n\t Enter the Account ID to the desired Account: ");
+    attron(COLOR_PAIR(1) | A_BOLD);
+    mvprintenter("Enter the Account ID to the desired Account: ");
     refresh();
     scanw("%s", dID);
+    if (checkAccIDExist(dID) == 0)
+    {
+        errprint("This Account Does Not Exist");
+        endwin();
+        mainMenu(u);
+    }
+
     if (checkAuth(u, dID) == false)
     {
         errprint("You are not authorized to perform this action on this account");
         mainMenu(u);
     }
+
     do
     {
-        printw("\n\t What field do you desire to change? ([1] Phone Number, [2] Country): ");
+        werase(stdscr);
+        refresh();
+        mvprintenter("What field do you desire to change? ([1] Phone Number, [2] Country): ");
         scanw("%s", choice);
 
         if (strcmp(choice, "1") == 0)
@@ -301,7 +310,9 @@ void UpdateAccInfo(struct User u)
             ch = 1;
             do
             {
-                printw("\n\t\tEnter Your New Phone Number: ");
+                werase(stdscr);
+                refresh();
+                mvprintenter("Enter Your New Phone Number: ");
                 refresh();
                 scanw("%s", Ndata);
                 trim(Ndata);
@@ -312,7 +323,9 @@ void UpdateAccInfo(struct User u)
             ch = 2;
             do
             {
-                printw("Enter a New country: ");
+                werase(stdscr);
+                refresh();
+                mvprintenter("Enter a New country: ");
                 refresh();
                 scanw("%s", Ndata);
                 trim(Ndata);
@@ -323,9 +336,6 @@ void UpdateAccInfo(struct User u)
     //*==================================
     //* execute modification
 
-    printw("\n\n\tEXECUTING QUERY...");
-    refresh();
-
     conn = mysql_init(NULL);
     if (mysql_real_connect(conn, "localhost", "atmuser", "Abdoo@2004", "atm", 0, NULL, 0) == NULL)
     {
@@ -333,80 +343,33 @@ void UpdateAccInfo(struct User u)
         mysql_close(conn);
     }
 
-    char query[1500];
-    snprintf(query,
-             sizeof(query),
-             "SELECT * FROM Accounts WHERE UserName = '%s'",
-             u.name);
-
-    if (mysql_query(conn, query) != 0)
-    {
-        char emsg[1000];
-        sprintf(emsg, "Error Getting Accounts: %s\n", mysql_error(conn));
-        errprint(emsg);
-        mysql_close(conn);
-        endwin();
-    }
-
-    res = mysql_store_result(conn);
-    if (!res)
-    {
-        errprint("Failed to get query result");
-        mysql_close(conn);
-    }
-
-    int numRows = mysql_num_rows(res);
-    if (atoi(dID) > numRows)
-    {
-        errprint("ID number out of range of available Account records for your user");
-        mysql_free_result(res);
-        mysql_close(conn);
-    }
-
-    AccountRecord *accountArray = (AccountRecord *)malloc(numRows * sizeof(AccountRecord));
-    int rownum = 0;
-    while ((row = mysql_fetch_row(res)) != NULL && rownum <= numRows)
-    {
-        accountArray[rownum].Accid = atoi(row[0]);
-        strncpy(accountArray[rownum].username, row[1], sizeof(accountArray[rownum].username));
-        accountArray[rownum].userId = atoi(row[2]);
-        strncpy(accountArray[rownum].creationdate, row[3], sizeof(accountArray[rownum].creationdate));
-        strncpy(accountArray[rownum].country, row[4], sizeof(accountArray[rownum].country));
-        strncpy(accountArray[rownum].phoneno, row[5], sizeof(accountArray[rownum].phoneno));
-        accountArray[rownum].balance = atof(row[6]);
-        strncpy(accountArray[rownum].accountType, row[7], sizeof(accountArray[rownum].accountType));
-        rownum++;
-    }
-
-    mysql_free_result(res);
-
     char updateQuery[1500];
     if (ch == 1)
     {
 
         snprintf(updateQuery, sizeof(updateQuery), "UPDATE Accounts SET PhoneNo = '%s' WHERE AccountID = %d",
-                 Ndata, accountArray[atoi(dID)].Accid);
+                 Ndata, atoi(dID));
     }
     else if (ch == 2)
     {
         snprintf(updateQuery, sizeof(updateQuery), "UPDATE Accounts SET Country = '%s' WHERE AccountID = %d",
-                 Ndata, accountArray[atoi(dID)].Accid);
+                 Ndata, atoi(dID));
     }
 
     if (mysql_query(conn, updateQuery))
     {
-        errprint("Error updating the row\n");
+        errprint("Error updating the row");
     }
     else
     {
         clear();
-        printw("Row updated successfully.\n");
+        werase(stdscr);
+        mvprintenter("Row updated successfully.");
         refresh();
     }
 
     mysql_close(conn);
-    free(accountArray);
-    int c = getch();
+    getch();
     endwin();
     mainMenu(u);
 }
@@ -424,9 +387,16 @@ void checkSpecificAcc(struct User u)
     initscr();
     curs_set(1);
     clear();
-    printw("\n\t Enter the Account ID to the desired Account: ");
+    mvprintenter("Enter the Account ID to the desired Account: ");
     refresh();
     scanw("%s", dID);
+
+    if (checkAccIDExist(dID) == 0)
+    {
+        errprint("This Account Does Not Exist");
+        endwin();
+        mainMenu(u);
+    }
 
     if (checkAuth(u, dID) == false)
     {
@@ -438,6 +408,7 @@ void checkSpecificAcc(struct User u)
     {
         errprint("Cannot connect to database");
         mysql_close(conn);
+        endwin();
     }
 
     char query[1500];
@@ -472,7 +443,7 @@ void checkSpecificAcc(struct User u)
     strncpy(dAccount->creationdate, row[3], sizeof(dAccount->creationdate));
     strncpy(dAccount->country, row[4], sizeof(dAccount->country));
     strncpy(dAccount->phoneno, row[5], sizeof(dAccount->phoneno));
-    dAccount->balance = atoi(row[6]);
+    dAccount->balance = strtod(row[6], NULL);
     strncpy(dAccount->accountType, row[7], sizeof(dAccount->accountType));
 
     init_pair(1, COLOR_GREEN, COLOR_BLACK);
@@ -647,6 +618,12 @@ void TransferAcc(struct User u)
         mainMenu(u);
     }
 
+    if (checkAuth(u, dID) == false)
+    {
+        errprint("You are not authorized to perform this action on this account");
+        mainMenu(u);
+    }
+
     char duname[1000];
     clear();
     mvprintw(maxY / 2, (maxX / 2 - strlen(" Enter the Desired User to transfer to:  ") / 2), " Enter the Desired User to transfer to:  ");
@@ -663,7 +640,7 @@ void TransferAcc(struct User u)
 
     clear();
     attron(COLOR_PAIR(3) | A_BOLD);
-    mvprintw(maxY / 2, (maxX / 2 - strlen(" NOTE: ALL TRANSACTIONS RELATED TO THIS ACCOUNT WILL BE DELETED, RESTARD WILL BE NEEDED  ") / 2), " NOTE: ALL TRANSACTIONS RELATED TO THIS ACCOUNT WILL BE DELETED, RESTARD WILL BE NEEDED  ");
+    mvprintenter("NOTE: ALL TRANSACTIONS RELATED TO THIS ACCOUNT WILL BE DELETED, RESTART WILL BE NEEDED");
     refresh();
     attroff(COLOR_PAIR(3) | A_BOLD);
 

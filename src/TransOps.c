@@ -106,6 +106,13 @@ void MakeTransaction(struct User u)
     refresh();
     scanw("%s", dID);
 
+    if (checkAccIDExist(dID) == 0)
+    {
+        errprint("This Account Does Not Exist");
+        endwin();
+        mainMenu(u);
+    }
+
     if (checkAuth(u, dID) == false)
     {
         errprint("You are not authorized to perform this action on this account");
@@ -158,7 +165,6 @@ void MakeTransaction(struct User u)
         mysql_free_result(res);
         free(dAccount);
         mysql_close(conn);
-        endwin();
         mainMenu(u);
     }
 
@@ -176,6 +182,17 @@ void MakeTransaction(struct User u)
     scanw("%s", opt);
 
     int mainAmt = atoi(dAmt);
+
+    if (mainAmt < 0)
+    {
+        errprint("INVALID AMOUNT");
+        mysql_free_result(res);
+        free(dAccount);
+        mysql_close(conn);
+        endwin();
+        mainMenu(u);
+        return;
+    }
 
     switch (atoi(opt))
     {

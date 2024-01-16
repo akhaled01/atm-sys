@@ -59,18 +59,17 @@ void CreateNewUser()
         {
         case 2:
             errprint("Error executing username check query");
-            getch();
-            mysql_close(conn);
+            // mysql_close(conn);
             return;
         case 3:
             errprint("error connecting to user database");
-            getch();
-            mysql_close(conn);
+            // mysql_close(conn);
+            endwin();
             return;
         case 1:
             errprint("User Already Exists");
-            getch();
-            mysql_close(conn);
+            // mysql_close(conn);
+            endwin();
             return;
         }
     }
@@ -106,4 +105,3 @@ void CreateNewUser()
     strcpy(nu.password, userPwd);
     mainMenu(nu);
 }
-

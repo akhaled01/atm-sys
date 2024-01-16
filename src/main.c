@@ -109,7 +109,6 @@ void startMenu()
         break;
     case 3:
         endwin();
-        //  ensure that the terminal is reset
         system("reset");
         break;
     default:
@@ -118,7 +117,7 @@ void startMenu()
         mvprintw(0, 0, "Please insert a Valid Operation");
         refresh();
         attroff(COLOR_PAIR(3) | A_BOLD);
-        int endall = getch();
+        getch();
         endwin();
         system("reset");
     }
